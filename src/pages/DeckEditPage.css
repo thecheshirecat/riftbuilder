@@ -1,0 +1,62 @@
+.content-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 30px;
+  height: 100%;
+  align-items: start;
+  transition: all 0.3s ease;
+}
+
+.content-grid.full-deck {
+  grid-template-columns: 1fr;
+}
+
+.card-list-section {
+  background: #1e1e1e;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #333;
+}
+
+.deck-section {
+  background: #1e1e1e;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  height: 100%;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #333;
+}
+
+/* Custom Scrollbar for Deck Section */
+.deck-section::-webkit-scrollbar {
+  width: 8px;
+}
+
+.deck-section::-webkit-scrollbar-track {
+  background: var(--bg-dark, #121212);
+  border-radius: 0 12px 12px 0;
+}
+
+.deck-section::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 4px;
+}
+
+/* Responsive design */
+@media (max-width: 1024px) {
+  .content-grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr auto;
+    gap: 20px;
+  }
+
+  .deck-section {
+    height: 300px; /* Fixed height for mobile deck view */
+  }
+}

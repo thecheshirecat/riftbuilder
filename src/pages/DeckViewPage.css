@@ -1,0 +1,57 @@
+.deck-view-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.deck-view-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.deck-view-title h1 {
+  margin: 0;
+  font-size: 2.5rem;
+  color: var(--primary);
+}
+
+.deck-view-title p {
+  margin: 10px 0 0 0;
+  color: var(--text-dim);
+  font-size: 1.1rem;
+}
+
+.deck-view-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.edit-deck-btn {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.edit-deck-btn:hover {
+  background: #74c0fc;
+  transform: translateY(-2px);
+}
+
+.deck-view-content {
+  background: var(--bg-card);
+  border-radius: 16px;
+  border: 1px solid var(--border-color);
+  padding: 30px;
+  box-shadow: var(--shadow-main);
+}

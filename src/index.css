@@ -1,0 +1,50 @@
+:root {
+  /* Colors */
+  --bg-dark: #121212;
+  --bg-card: #1e1e1e;
+  --bg-accent: #252525;
+  --border-color: rgba(255, 255, 255, 0.1);
+  --text-main: #e0e0e0;
+  --text-dim: #888;
+  --primary: #4dabf7;
+  --primary-glow: rgba(77, 171, 247, 0.4);
+  --accent: #ffd700;
+  --danger: #ff6b6b;
+
+  /* Shadows & Effects */
+  --shadow-main: 0 4px 12px rgba(0, 0, 0, 0.5);
+  --backdrop-blur: blur(12px);
+  --transition: all 0.2s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+body {
+  margin: 0;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu",
+    "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family:
+    source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
+}
+
+/* Loading/Error states */
+.loading,
+.error {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+  font-size: 18px;
+  color: #666;
+}
+
+.error {
+  background: #f8d7da;
+  color: #721c24;
+  border-radius: 6px;
+  border: 1px solid #f5c6cb;
+}

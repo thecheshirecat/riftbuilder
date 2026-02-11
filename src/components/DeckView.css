@@ -1,0 +1,167 @@
+/* DeckView-specific styles */
+.deck-view-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.deck-hero-section {
+  background: linear-gradient(
+    135deg,
+    rgba(77, 171, 247, 0.1) 0%,
+    rgba(0, 0, 0, 0.3) 100%
+  );
+  padding: 40px 30px;
+  border-bottom: 2px solid var(--primary);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.deck-hero-title {
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: white;
+  margin: 0 0 15px 0;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+  position: relative;
+  z-index: 1;
+}
+
+.deck-hero-description {
+  font-size: 1.1rem;
+  color: var(--text-main);
+  max-width: 700px;
+  margin: 0 auto 25px;
+  line-height: 1.6;
+  position: relative;
+  z-index: 1;
+}
+
+.deck-hero-meta {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  position: relative;
+  z-index: 1;
+}
+
+.deck-status-badge {
+  padding: 8px 20px;
+  border-radius: 25px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.deck-status-badge.valid {
+  background: linear-gradient(135deg, #40c057 0%, #2f9e44 100%);
+  color: white;
+}
+
+.deck-status-badge.invalid {
+  background: linear-gradient(135deg, #ff6b6b 0%, #fa5252 100%);
+  color: white;
+}
+
+.legend-showcase {
+  padding: 40px 30px;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.2) 0%,
+    rgba(0, 0, 0, 0.4) 100%
+  );
+  border-bottom: 1px solid var(--border-color);
+}
+
+.showcase-label {
+  text-align: center;
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--primary);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin: 0 0 25px 0;
+}
+
+.legend-card-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.legend-card-display .card {
+  max-width: 300px;
+  box-shadow: 0 10px 40px rgba(77, 171, 247, 0.3);
+  border: 2px solid var(--primary);
+}
+
+.legend-domains {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.domain-badge {
+  background: linear-gradient(135deg, var(--primary) 0%, #339af0 100%);
+  color: white;
+  padding: 8px 18px;
+  border-radius: 20px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  box-shadow: 0 4px 15px var(--primary-glow);
+  animation: badge-pulse 2s ease-in-out infinite;
+}
+
+@keyframes badge-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.deck-identity-container {
+  padding: 40px 30px;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.3) 0%,
+    rgba(0, 0, 0, 0.5) 100%
+  );
+  border-bottom: 1px solid var(--border-color);
+}
+
+.identity-section-title {
+  text-align: center;
+  font-size: 1.8rem;
+  font-weight: 900;
+  color: var(--primary);
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  margin: 0 0 30px 0;
+  text-shadow: 0 0 20px var(--primary-glow);
+}
+
+.identity-unified-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+  justify-content: center;
+}
+
+.identity-unified-grid .card {
+  max-width: 200px;
+}
+
+.deck-sideboard-view-section {
+  margin-top: 30px;
+}
