@@ -25,7 +25,8 @@ function DeckEditPage() {
   const [filters, setFilters] = useState({
     q: "",
     domains: [],
-    type: "",
+    type: "Legend",
+    rarity: "",
     energy_min: 0,
     energy_max: 12,
     power_min: 0,
@@ -35,6 +36,7 @@ function DeckEditPage() {
     sort: "name",
     order: "ASC",
     page: 1,
+    isSideboardContext: false, // New context to know if we are adding to sideboard
   });
 
   const {
@@ -48,6 +50,91 @@ function DeckEditPage() {
     removeCardFromDeck,
     setMainChampionId,
   } = useDeck(parseInt(deckId));
+
+  // Handler for section clicks to set filters
+  const handleSectionClick = useCallback((sectionType) => {
+    setFilters((prev) => {
+      const baseFilters = {
+        ...prev,
+        q: "",
+        energy_min: 0,
+        energy_max: 12,
+        power_min: 0,
+        power_max: 4,
+        might_min: 0,
+        might_max: 12,
+        page: 1,
+        isSideboardContext: sectionType === "sideboard",
+      };
+
+      switch (sectionType) {
+        case "legend":
+          return { ...baseFilters, type: "Legend" };
+        case "battlefield":
+          return { ...baseFilters, type: "Battlefield" };
+        case "main":
+          return { ...baseFilters, type: "Unit,Spell,Gear,Champion" };
+        case "runes":
+          return { ...baseFilters, type: "Rune" };
+        case "sideboard":
+          return {
+            ...baseFilters,
+            type: "Unit,Spell,Gear,Champion,Rune",
+          };
+        default:
+          return baseFilters;
+      }
+    });
+  }, []);
+
+  // Ref to track if we have initialized the filters for this deck session
+  const filtersInitialized = React.useRef(false);
+
+  // Initial filter setup ONLY on first load of the deck
+  useEffect(() => {
+    if (!selectedDeck || filtersInitialized.current || deck.length === 0)
+      return;
+
+    const hasLegend = deck.some((c) => c.type === "Legend" && !c.is_sideboard);
+    const battlefieldsCount = deck.filter(
+      (c) => c.type === "Battlefield" && !c.is_sideboard,
+    ).length;
+
+    if (hasLegend && battlefieldsCount === 3) {
+      setFilters((prev) => ({
+        ...prev,
+        type: "Unit,Spell,Gear,Champion",
+        isSideboardContext: false,
+      }));
+    } else if (!hasLegend) {
+      setFilters((prev) => ({ ...prev, type: "Legend" }));
+    } else if (battlefieldsCount < 3) {
+      setFilters((prev) => ({ ...prev, type: "Battlefield" }));
+    }
+
+    filtersInitialized.current = true;
+  }, [selectedDeck, deck.length === 0]); // Only run when deck goes from empty to loaded or on first load
+
+  // Helper to clear auto-filters when requirements are met
+  useEffect(() => {
+    if (!selectedDeck || !filtersInitialized.current) return;
+
+    const hasLegend = deck.some((c) => c.type === "Legend" && !c.is_sideboard);
+    const battlefieldsCount = deck.filter(
+      (c) => c.type === "Battlefield" && !c.is_sideboard,
+    ).length;
+
+    // Auto-advance logic: only trigger if we were in an "auto-filter" state
+    if (hasLegend && filters.type === "Legend") {
+      setFilters((prev) => ({
+        ...prev,
+        type:
+          battlefieldsCount < 3 ? "Battlefield" : "Unit,Spell,Gear,Champion",
+      }));
+    } else if (battlefieldsCount === 3 && filters.type === "Battlefield") {
+      setFilters((prev) => ({ ...prev, type: "Unit,Spell,Gear,Champion" }));
+    }
+  }, [deck.length, selectedDeck]);
 
   useEffect(() => {
     const fetchDomains = async () => {
@@ -70,12 +157,39 @@ function DeckEditPage() {
 
   const fetchCards = useCallback(async () => {
     try {
-      const params = new URLSearchParams({
-        ...filters,
-        domains: filters.domains.join(","),
-        page: filters.page,
-      });
-      const res = await fetch(`${API_BASE}/cards?${params.toString()}`);
+      const queryParams = new URLSearchParams();
+
+      // Add basic filters
+      if (filters.q) queryParams.append("q", filters.q);
+      if (filters.sort) queryParams.append("sort", filters.sort);
+      if (filters.order) queryParams.append("order", filters.order);
+      queryParams.append("page", filters.page);
+
+      // Only add type filter if something is selected
+      if (filters.type) {
+        queryParams.append("type", filters.type);
+      }
+
+      // Only add rarity filter if something is selected
+      if (filters.rarity) {
+        // Use "rarity" parameter and send values as they are (Capitalized)
+        queryParams.append("rarity", filters.rarity);
+      }
+
+      // Only add domain filter if something is selected
+      if (filters.domains && filters.domains.length > 0) {
+        queryParams.append("domains", filters.domains.join(","));
+      }
+
+      // Add stat filters
+      queryParams.append("energy_min", filters.energy_min);
+      queryParams.append("energy_max", filters.energy_max);
+      queryParams.append("power_min", filters.power_min);
+      queryParams.append("power_max", filters.power_max);
+      queryParams.append("might_min", filters.might_min);
+      queryParams.append("might_max", filters.might_max);
+
+      const res = await fetch(`${API_BASE}/cards?${queryParams.toString()}`);
       const result = await res.json();
       setCards(result.data);
       setPagination(result.pagination);
@@ -98,6 +212,9 @@ function DeckEditPage() {
   }, [deck]);
 
   const handleAddCardToDeck = async (card, isSideboard = false) => {
+    // If we are in sideboard context, default to sideboard unless explicitly told otherwise
+    const targetIsSideboard = filters.isSideboardContext || isSideboard;
+
     const currentGlobalCopies = globalCardCounts[card.name] || 0;
 
     // 1. Check Global Limit (Shared between Main and Sideboard)
@@ -118,7 +235,15 @@ function DeckEditPage() {
     }
 
     // 2. Section Specific Logic
-    if (isSideboard) {
+    if (targetIsSideboard) {
+      if (card.type === "Battlefield") {
+        alert("Battlefields cannot be added to the sideboard.");
+        return;
+      }
+      if (card.type === "Legend") {
+        alert("Legends cannot be added to the sideboard.");
+        return;
+      }
       const sideboardCount = deck.filter((c) => c.is_sideboard).length;
       if (sideboardCount >= 8) {
         alert("Sideboard is full (max 8 cards).");
@@ -244,6 +369,10 @@ function DeckEditPage() {
               viewMode={viewMode}
               setViewMode={() => {}} // Deshabilitado en edición
               setSelectedCard={setSelectedCard}
+              onSectionClick={handleSectionClick}
+              activeSection={
+                filters.isSideboardContext ? "sideboard" : filters.type
+              }
             />
           </section>
         </div>
@@ -253,6 +382,7 @@ function DeckEditPage() {
         <CardDetailPopup
           card={selectedCard}
           onClose={() => setSelectedCard(null)}
+          onAdd={handleAddCardToDeck}
         />
       )}
     </div>

@@ -35,18 +35,6 @@ function CardList({
                 quantity={cardCounts[card.name] || 0}
                 viewMode={viewMode}
               />
-              {/* Botón para añadir al Sideboard fuera del CardItem para no romper sus estilos */}
-              {addCardToDeck && (
-                <button
-                  className="add-to-sideboard-btn"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    addCardToDeck(card, true);
-                  }}
-                >
-                  Sideboard +
-                </button>
-              )}
             </div>
           ))}
         </div>

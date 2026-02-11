@@ -24,12 +24,16 @@ const BuilderSection = ({
   removeCardFromDeck,
   setSelectedCard,
   isSideboard = false,
+  onClick,
+  isActive,
 }) => {
   const grouped = useMemo(() => groupCards(cards), [cards]);
 
   return (
     <div
-      className={`deck-section-internal grid-visual ${isSideboard ? "sideboard-section" : ""}`}
+      className={`deck-section-internal grid-visual ${isSideboard ? "sideboard-section" : ""} ${isActive ? "active-context" : ""}`}
+      onClick={onClick}
+      style={{ cursor: "pointer" }}
     >
       <h3>
         {title} ({cards.length}
@@ -47,12 +51,6 @@ const BuilderSection = ({
             viewMode="grid"
           />
         ))}
-        {/* Botón rápido para añadir al sideboard si está vacío o tiene espacio */}
-        {isSideboard && cards.length < 8 && (
-          <div className="sideboard-placeholder">
-            <span>Add cards from list...</span>
-          </div>
-        )}
       </div>
     </div>
   );
@@ -70,12 +68,22 @@ const DeckBuilder = ({
   addCardToDeck,
   setSelectedCard,
   validation,
+  onSectionClick,
+  activeSection,
 }) => {
   const [isEditingMetadata, setIsEditingMetadata] = React.useState(false);
   const [editName, setEditName] = React.useState(selectedDeck.name);
   const [editDesc, setEditDesc] = React.useState(
     selectedDeck.description || "",
   );
+
+  // Sync state with selectedDeck when it changes (especially when starting edit)
+  React.useEffect(() => {
+    if (isEditingMetadata) {
+      setEditName(selectedDeck.name);
+      setEditDesc(selectedDeck.description || "");
+    }
+  }, [isEditingMetadata, selectedDeck]);
 
   const handleSaveMetadata = () => {
     updateDeckMetadata(selectedDeck.id, {
@@ -254,6 +262,8 @@ const DeckBuilder = ({
           addCardToDeck={addCardToDeck}
           removeCardFromDeck={removeCardFromDeck}
           setSelectedCard={setSelectedCard}
+          onClick={() => onSectionClick && onSectionClick("legend")}
+          isActive={activeSection === "Legend"}
         />
         <BuilderSection
           title="Battlefields"
@@ -262,6 +272,8 @@ const DeckBuilder = ({
           addCardToDeck={addCardToDeck}
           removeCardFromDeck={removeCardFromDeck}
           setSelectedCard={setSelectedCard}
+          onClick={() => onSectionClick && onSectionClick("battlefield")}
+          isActive={activeSection === "Battlefield"}
         />
         <BuilderSection
           title="Main Deck"
@@ -270,6 +282,8 @@ const DeckBuilder = ({
           addCardToDeck={addCardToDeck}
           removeCardFromDeck={removeCardFromDeck}
           setSelectedCard={setSelectedCard}
+          onClick={() => onSectionClick && onSectionClick("main")}
+          isActive={activeSection === "Unit,Spell,Gear,Champion"}
         />
         <BuilderSection
           title="Runes"
@@ -278,6 +292,8 @@ const DeckBuilder = ({
           addCardToDeck={addCardToDeck}
           removeCardFromDeck={removeCardFromDeck}
           setSelectedCard={setSelectedCard}
+          onClick={() => onSectionClick && onSectionClick("runes")}
+          isActive={activeSection === "Rune"}
         />
         <BuilderSection
           title="Sideboard"
@@ -287,6 +303,8 @@ const DeckBuilder = ({
           removeCardFromDeck={removeCardFromDeck}
           setSelectedCard={setSelectedCard}
           isSideboard={true}
+          onClick={() => onSectionClick && onSectionClick("sideboard")}
+          isActive={activeSection === "Unit,Spell,Gear,Champion,Rune"}
         />
       </div>
     </div>

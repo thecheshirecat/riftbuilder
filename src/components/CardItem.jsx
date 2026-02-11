@@ -18,11 +18,6 @@ function CardItem({
     onRightClick(card);
   };
 
-  const handleAddSideboard = (e) => {
-    e.stopPropagation();
-    onAdd && onAdd(card, true);
-  };
-
   if (viewMode === "list") {
     return (
       <div
