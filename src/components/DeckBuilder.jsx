@@ -1,20 +1,8 @@
 import React, { useMemo } from "react";
 import CardItem from "./CardItem";
+import { groupCards, sortCards } from "../utils/cardUtils";
 import "./Deck.css";
 import "./DeckBuilder.css";
-
-const groupCards = (cards) => {
-  if (!cards) return [];
-  return cards.reduce((acc, card) => {
-    const existing = acc.find((c) => c.name === card.name);
-    if (existing) {
-      existing.quantity = (existing.quantity || 1) + 1;
-    } else {
-      acc.push({ ...card, quantity: 1 });
-    }
-    return acc;
-  }, []);
-};
 
 const BuilderSection = ({
   title,
@@ -30,25 +18,7 @@ const BuilderSection = ({
   order,
 }) => {
   const sortedCards = useMemo(() => {
-    if (!cards || !sort) return cards;
-
-    return [...cards].sort((a, b) => {
-      let valA = a[sort];
-      let valB = b[sort];
-
-      // Handle numeric comparisons for energy, power, might
-      if (typeof valA === "number" && typeof valB === "number") {
-        return order === "ASC" ? valA - valB : valB - valA;
-      }
-
-      // String comparisons
-      valA = String(valA || "").toLowerCase();
-      valB = String(valB || "").toLowerCase();
-
-      if (valA < valB) return order === "ASC" ? -1 : 1;
-      if (valA > valB) return order === "ASC" ? 1 : -1;
-      return 0;
-    });
+    return sortCards(cards, sort, order);
   }, [cards, sort, order]);
 
   const grouped = useMemo(() => groupCards(sortedCards), [sortedCards]);
@@ -57,7 +27,6 @@ const BuilderSection = ({
     <div
       className={`deck-section-internal grid-visual ${isSideboard ? "sideboard-section" : ""} ${isActive ? "active-context" : ""}`}
       onClick={onClick}
-      style={{ cursor: "pointer" }}
     >
       <h3>
         {title} ({cards.length}

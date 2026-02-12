@@ -155,3 +155,85 @@ export const validateDeck = (deck, mainChampionId) => {
     legendDomains,
   };
 };
+
+/**
+ * Groups cards by name and calculates quantities
+ * @param {Array} cards - Array of card objects
+ * @returns {Array} Array of grouped card objects with a quantity property
+ */
+export const groupCards = (cards) => {
+  if (!cards || !Array.isArray(cards)) return [];
+  return cards.reduce((acc, card) => {
+    const existing = acc.find((c) => c.name === card.name);
+    if (existing) {
+      existing.quantity = (existing.quantity || 1) + 1;
+    } else {
+      acc.push({ ...card, quantity: 1 });
+    }
+    return acc;
+  }, []);
+};
+
+/**
+ * Sorts an array of cards based on various modes
+ * @param {Array} cards - Array of card objects
+ * @param {string} sortMode - Sort mode ('name', 'energy', 'rarity', 'type', 'power', 'might')
+ * @param {string} sortOrder - Sort order ('ASC', 'DESC')
+ * @returns {Array} Sorted array
+ */
+export const sortCards = (cards, sortMode = "name", sortOrder = "ASC") => {
+  if (!cards || !Array.isArray(cards)) return [];
+
+  const rarityOrder = {
+    showcase: 0,
+    epic: 1,
+    rare: 2,
+    uncommon: 3,
+    common: 4,
+  };
+
+  const typeOrder = {
+    Legend: 0,
+    Battlefield: 1,
+    Champion: 2,
+    Unit: 3,
+    Spell: 4,
+    Gear: 5,
+    Rune: 6,
+  };
+
+  return [...cards].sort((a, b) => {
+    let comparison = 0;
+
+    switch (sortMode) {
+      case "energy":
+        comparison = (a.energy || 0) - (b.energy || 0);
+        break;
+      case "rarity":
+        comparison =
+          (rarityOrder[a.rarity?.toLowerCase()] ?? 5) -
+          (rarityOrder[b.rarity?.toLowerCase()] ?? 5);
+        break;
+      case "type":
+        comparison = (typeOrder[a.type] ?? 7) - (typeOrder[b.type] ?? 7);
+        break;
+      case "power":
+        comparison = (a.power || 0) - (b.power || 0);
+        break;
+      case "might":
+        comparison = (a.might || 0) - (b.might || 0);
+        break;
+      case "name":
+      default:
+        comparison = (a.name || "").localeCompare(b.name || "");
+        break;
+    }
+
+    // Fallback to name for stable sort when values are equal
+    if (comparison === 0 && sortMode !== "name") {
+      comparison = (a.name || "").localeCompare(b.name || "");
+    }
+
+    return sortOrder === "ASC" ? comparison : -comparison;
+  });
+};

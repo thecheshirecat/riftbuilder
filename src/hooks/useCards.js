@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { fetchCards, fetchDomains } from "../services/riftbound-api";
+import * as api from "../services/riftbound-api";
 
 export function useCards() {
   const [cards, setCards] = useState([]);
@@ -24,43 +24,45 @@ export function useCards() {
   // Load available domains on mount
   useEffect(() => {
     const loadDomains = async () => {
-        try {
-            const domains = await fetchDomains();
-            setAvailableDomains(domains);
-        } catch (e) {
-            console.error("Failed to load domains", e);
-        }
+      try {
+        const domains = await api.fetchDomains();
+        setAvailableDomains(domains);
+      } catch (e) {
+        console.error("Failed to load domains", e);
+      }
     };
     loadDomains();
   }, []);
 
-  const loadCards = useCallback(
-    async () => {
-      try {
-        setLoading(true);
-        // Clean up empty filters
-        const cleanFilters = Object.fromEntries(
-            Object.entries(filters).filter(([_, v]) => 
-                v !== "" && !(Array.isArray(v) && v.length === 0)
-            )
-        );
-        
-        if (cleanFilters.domains && Array.isArray(cleanFilters.domains)) {
-            cleanFilters.domains = cleanFilters.domains.join(",");
+  const loadCards = useCallback(async (currentFilters = filters) => {
+    try {
+      setLoading(true);
+      
+      const params = { ...currentFilters };
+      
+      // Clean up filters
+      Object.keys(params).forEach(key => {
+        const val = params[key];
+        if (val === "" || val === null || val === undefined || (Array.isArray(val) && val.length === 0)) {
+          delete params[key];
         }
+      });
 
-        const result = await fetchCards(cleanFilters);
-        setCards(result.cards);
-        setPagination(result.pagination);
-      } catch (error) {
-        console.error("Error loading cards:", error);
-        setError(error.message);
-      } finally {
-        setLoading(false);
+      if (params.domains && Array.isArray(params.domains)) {
+        params.domains = params.domains.join(",");
       }
-    },
-    [filters],
-  );
+
+      const result = await api.fetchCards(params);
+      setCards(result.cards || []);
+      setPagination(result.pagination || { current: 1, total: 0, pages: 1 });
+      setError(null);
+    } catch (err) {
+      console.error("Error loading cards:", err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }, [filters]);
 
   useEffect(() => {
     if (isInitialMount.current) {
@@ -74,9 +76,23 @@ export function useCards() {
     return () => clearTimeout(t);
   }, [filters, loadCards]);
 
-  const setPage = (page) => {
-      setFilters(prev => ({ ...prev, page }));
-  };
+  const setPage = useCallback((page) => {
+    setFilters(prev => ({ ...prev, page }));
+  }, []);
 
-  return { cards, loading, error, filters, setFilters, availableDomains, pagination, setPage };
+  const refresh = useCallback(() => {
+    loadCards();
+  }, [loadCards]);
+
+  return { 
+    cards, 
+    loading, 
+    error, 
+    filters, 
+    setFilters, 
+    availableDomains, 
+    pagination, 
+    setPage,
+    refresh 
+  };
 }

@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import HeroCards from "../components/HeroCards";
+import * as api from "../services/riftbound-api";
 import "./HomePage.css";
-
-const API_BASE = "http://localhost:3001/api";
 
 function HomePage() {
   const [decks, setDecks] = useState([]);
@@ -12,41 +11,34 @@ function HomePage() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    const fetchDecks = async () => {
+      try {
+        const data = await api.fetchDecks();
+        setDecks(data);
+      } catch (err) {
+        console.error("Error fetching decks:", err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
     fetchDecks();
   }, []);
-
-  const fetchDecks = async () => {
-    try {
-      const res = await fetch(`${API_BASE}/decks`);
-      const data = await res.json();
-      setDecks(data);
-    } catch (err) {
-      console.error("Error fetching decks:", err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const handleCreateDeck = async (e) => {
     e.preventDefault();
     if (!newDeckName.trim()) return;
 
     try {
-      const res = await fetch(`${API_BASE}/decks`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: newDeckName }),
-      });
-      const data = await res.json();
-      // Al crear un deck, vamos directamente al editor
-      navigate(`/edit/${data.id}`);
+      const data = await api.createDeck(newDeckName);
+      if (data && data.id) {
+        navigate(`/edit/${data.id}`);
+      }
     } catch (err) {
       console.error("Error creating deck:", err);
     }
   };
 
   const handleSelectDeck = (deckId) => {
-    // Al seleccionar un deck, vamos a la vista pública
     navigate(`/view/${deckId}`);
   };
 

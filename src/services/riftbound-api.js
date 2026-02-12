@@ -1,15 +1,19 @@
 const API_URL = "http://localhost:3001/api";
 
+const handleResponse = async (response) => {
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+  }
+  return response.json();
+};
+
 export const fetchCards = async (params = {}) => {
   try {
     const queryString = new URLSearchParams(params).toString();
     const url = queryString ? `${API_URL}/cards?${queryString}` : `${API_URL}/cards`;
     
-    const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    const result = await response.json();
+    const result = await handleResponse(await fetch(url));
     return { cards: result.data, pagination: result.pagination };
   } catch (error) {
     console.error("Error fetching cards:", error);
@@ -17,106 +21,99 @@ export const fetchCards = async (params = {}) => {
   }
 };
 
-export const fetchDomains = async () => {
-    try {
-        const response = await fetch(`${API_URL}/domains`);
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return await response.json();
-    } catch (error) {
-        console.error("Error fetching domains:", error);
-        return [];
-    }
+export const fetchRandomCards = async (count = 4) => {
+  try {
+    return await handleResponse(await fetch(`${API_URL}/cards/random?count=${count}`));
+  } catch (error) {
+    console.error("Error fetching random cards:", error);
+    return [];
+  }
 };
 
-
+export const fetchDomains = async () => {
+  try {
+    return await handleResponse(await fetch(`${API_URL}/domains`));
+  } catch (error) {
+    console.error("Error fetching domains:", error);
+    return [];
+  }
+};
 
 export const fetchDecks = async () => {
   try {
-    const response = await fetch(`${API_URL}/decks`);
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    return await response.json();
+    return await handleResponse(await fetch(`${API_URL}/decks`));
   } catch (error) {
     console.error("Error fetching decks:", error);
     return [];
   }
 };
 
+export const fetchDeck = async (deckId) => {
+  try {
+    return await handleResponse(await fetch(`${API_URL}/decks/${deckId}`));
+  } catch (error) {
+    console.error("Error fetching deck:", error);
+    return null;
+  }
+};
+
 export const createDeck = async (name) => {
   try {
-    const response = await fetch(`${API_URL}/decks`, {
+    return await handleResponse(await fetch(`${API_URL}/decks`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name }),
-    });
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    return await response.json();
+    }));
   } catch (error) {
     console.error("Error creating deck:", error);
     return null;
   }
 };
 
-export const addCardToDeck = async (deckId, cardId) => {
+export const deleteDeck = async (deckId) => {
   try {
-    const response = await fetch(`${API_URL}/decks/${deckId}/cards`, {
+    const response = await fetch(`${API_URL}/decks/${deckId}`, { method: "DELETE" });
+    return response.ok;
+  } catch (error) {
+    console.error("Error deleting deck:", error);
+    return false;
+  }
+};
+
+export const updateDeck = async (deckId, data) => {
+  try {
+    return await handleResponse(await fetch(`${API_URL}/decks/${deckId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    }));
+  } catch (error) {
+    console.error("Error updating deck:", error);
+    return null;
+  }
+};
+
+export const addCardToDeck = async (deckId, cardId, isSideboard = false) => {
+  try {
+    return await handleResponse(await fetch(`${API_URL}/decks/${deckId}/cards`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ cardId }),
-    });
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    return await response.json();
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ cardId, isSideboard }),
+    }));
   } catch (error) {
     console.error("Error adding card to deck:", error);
     return null;
   }
 };
 
-export const removeCardFromDeck = async (deckId, cardId) => {
+export const removeCardFromDeck = async (deckId, cardId, isSideboard = false) => {
   try {
-    const response = await fetch(`${API_URL}/decks/${deckId}/cards/${cardId}`, {
+    const query = isSideboard ? `?isSideboard=true` : "";
+    return await handleResponse(await fetch(`${API_URL}/decks/${deckId}/cards/${cardId}${query}`, {
       method: "DELETE",
-    });
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    return await response.json();
+    }));
   } catch (error) {
     console.error("Error removing card from deck:", error);
     return null;
   }
-};
-
-export const fetchDeck = async (deckId) => {
-  try {
-    const response = await fetch(`${API_URL}/decks/${deckId}`);
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    return await response.json();
-  } catch (error) {
-    console.error("Error fetching deck:", error);
-    return [];
-  }
-};
-export const updateDeckMainChampion = async (deckId, mainChampionId) => {
-  const response = await fetch(`${API_URL}/decks/${deckId}`, {
-    method: "PATCH",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ mainChampionId }),
-  });
-  return response.json();
 };

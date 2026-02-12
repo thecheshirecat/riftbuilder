@@ -1,63 +1,8 @@
 import React, { useMemo, useState } from "react";
 import CardItem from "./CardItem";
+import { groupCards, sortCards } from "../utils/cardUtils";
 import "./Deck.css";
 import "./DeckView.css";
-
-const groupCards = (cards, sortMode = "name", sortOrder = "ASC") => {
-  if (!cards) return [];
-
-  // First group by name to get quantities
-  const grouped = cards.reduce((acc, card) => {
-    const existing = acc.find((c) => c.name === card.name);
-    if (existing) {
-      existing.quantity = (existing.quantity || 1) + 1;
-    } else {
-      acc.push({ ...card, quantity: 1 });
-    }
-    return acc;
-  }, []);
-
-  // Then sort the grouped array
-  return [...grouped].sort((a, b) => {
-    let comparison = 0;
-    if (sortMode === "energy") {
-      const energyA = a.energy || 0;
-      const energyB = b.energy || 0;
-      comparison = energyA - energyB;
-    } else if (sortMode === "rarity") {
-      const rarityOrder = {
-        showcase: 0,
-        epic: 1,
-        rare: 2,
-        uncommon: 3,
-        common: 4,
-      };
-      const rarityA = rarityOrder[a.rarity?.toLowerCase()] ?? 5;
-      const rarityB = rarityOrder[b.rarity?.toLowerCase()] ?? 5;
-      comparison = rarityA - rarityB;
-    } else if (sortMode === "type") {
-      const typeOrder = {
-        Legend: 0,
-        Battlefield: 1,
-        Champion: 2,
-        Unit: 3,
-        Spell: 4,
-        Gear: 5,
-        Rune: 6,
-      };
-      const typeA = typeOrder[a.type] ?? 7;
-      const typeB = typeOrder[b.type] ?? 7;
-      comparison = typeA - typeB;
-    }
-
-    // If values are equal or we are in name mode, fallback to name
-    if (comparison === 0) {
-      comparison = a.name.localeCompare(b.name);
-    }
-
-    return sortOrder === "ASC" ? comparison : -comparison;
-  });
-};
 
 const ViewSection = ({
   title,
@@ -68,10 +13,11 @@ const ViewSection = ({
   sortOrder,
   setSelectedCard,
 }) => {
-  const grouped = useMemo(
-    () => groupCards(cards, sortMode, sortOrder),
-    [cards, sortMode, sortOrder],
-  );
+  const grouped = useMemo(() => {
+    const sorted = sortCards(cards, sortMode, sortOrder);
+    return groupCards(sorted);
+  }, [cards, sortMode, sortOrder]);
+
   const isGrid = viewMode === "grid";
 
   return (
@@ -125,10 +71,10 @@ const DeckView = ({
   const { legend, battlefields, mainDeck, runes, sideboard, mainChampion } =
     validation;
 
-  const runesGrouped = useMemo(
-    () => groupCards(runes, sortMode, sortOrder),
-    [runes, sortMode, sortOrder],
-  );
+  const runesGrouped = useMemo(() => {
+    const sorted = sortCards(runes, sortMode, sortOrder);
+    return groupCards(sorted);
+  }, [runes, sortMode, sortOrder]);
 
   return (
     <>

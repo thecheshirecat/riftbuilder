@@ -231,6 +231,10 @@
   color: var(--primary);
 }
 
+.deck-section-internal h3 {
+  cursor: default !important;
+}
+
 .deck-section-internal.sideboard-section.active-context {
   background: rgba(255, 192, 72, 0.1);
   border: 1px solid #ffc048;
