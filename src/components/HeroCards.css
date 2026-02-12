@@ -1,0 +1,174 @@
+.hero-cards-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.hero-cards-perspective {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  perspective: 2000px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.hero-card {
+  position: absolute;
+  width: 280px;
+  height: 390px;
+  transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+  pointer-events: auto; /* Permitir interacción */
+}
+
+.card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transform-style: preserve-3d;
+}
+
+.card-inner img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.card-shine {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0) 45%,
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 255, 255, 0) 55%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  background-size: 200% 200%;
+  transition: all 0.5s ease;
+  pointer-events: none;
+}
+
+.card-shadow {
+  position: absolute;
+  bottom: -20px;
+  left: 5%;
+  width: 90%;
+  height: 20px;
+  background: rgba(0, 0, 0, 0.4);
+  filter: blur(15px);
+  border-radius: 50%;
+  z-index: -1;
+  transition: all 0.5s ease;
+}
+
+/* Posicionamiento inicial con perspectiva */
+
+.card-1 {
+  transform: translate3d(-350px, -50px, -200px) rotateY(25deg) rotateX(10deg);
+  z-index: 1;
+}
+
+.card-2 {
+  transform: translate3d(-150px, 50px, -100px) rotateY(15deg) rotateX(5deg);
+  z-index: 2;
+}
+
+.card-3 {
+  transform: translate3d(150px, -30px, -50px) rotateY(-15deg) rotateX(5deg);
+  z-index: 3;
+}
+
+.card-4 {
+  transform: translate3d(380px, 40px, -150px) rotateY(-25deg) rotateX(10deg);
+  z-index: 1;
+}
+
+/* Interacción Hover */
+
+.hero-card:hover {
+  transform: translate3d(var(--hover-x, 0), var(--hover-y, -40px), 100px)
+    rotateY(0deg) rotateX(0deg) scale(1.1);
+  z-index: 10;
+}
+
+.hero-card:hover .card-inner {
+  box-shadow:
+    0 30px 60px rgba(0, 0, 0, 0.8),
+    0 0 20px rgba(0, 212, 255, 0.3);
+  border-color: rgba(0, 212, 255, 0.5);
+}
+
+.hero-card:hover .card-shine {
+  background-position: 100% 100%;
+}
+
+.hero-card:hover .card-shadow {
+  transform: scale(1.2);
+  opacity: 0.6;
+  bottom: -40px;
+}
+
+/* Específicos para el hover según posición */
+.card-1:hover {
+  --hover-x: -350px;
+  --hover-y: -80px;
+}
+.card-2:hover {
+  --hover-x: -150px;
+  --hover-y: 20px;
+}
+.card-3:hover {
+  --hover-x: 150px;
+  --hover-y: -60px;
+}
+.card-4:hover {
+  --hover-x: 380px;
+  --hover-y: 10px;
+}
+
+@media (max-width: 1000px) {
+  .hero-card {
+    width: 200px;
+    height: 280px;
+  }
+  .card-1 {
+    transform: translate3d(-200px, -30px, -200px) rotateY(20deg);
+  }
+  .card-2 {
+    transform: translate3d(-80px, 30px, -100px) rotateY(10deg);
+  }
+  .card-3 {
+    transform: translate3d(80px, -20px, -50px) rotateY(-10deg);
+  }
+  .card-4 {
+    transform: translate3d(200px, 20px, -150px) rotateY(-20deg);
+  }
+
+  .card-1:hover {
+    --hover-x: -200px;
+  }
+  .card-2:hover {
+    --hover-x: -80px;
+  }
+  .card-3:hover {
+    --hover-x: 80px;
+  }
+  .card-4:hover {
+    --hover-x: 200px;
+  }
+}

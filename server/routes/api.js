@@ -65,6 +65,10 @@ router.get("/cards", async (req, res) => {
 
   if (type) {
     const typeList = type.split(",");
+    const legendTags = req.query.legendTags
+      ? req.query.legendTags.split(",")
+      : [];
+
     const typeClauses = typeList
       .map((t) => {
         const trimmed = t.trim();
@@ -74,19 +78,29 @@ router.get("/cards", async (req, res) => {
         if (trimmed === "Unit") {
           return "(type LIKE ? AND type NOT LIKE '%Champion%' AND supertype NOT LIKE '%Champion%' AND type NOT LIKE '%Legend%' AND supertype NOT LIKE '%Legend%')";
         }
+        if (trimmed === "Spell") {
+          // Si es un Spell y tiene supertype Signature, filtrar por tags de la leyenda
+          if (legendTags.length > 0) {
+            const tagClauses = legendTags.map(() => "tags LIKE ?").join(" OR ");
+            return `(type LIKE ? AND (supertype NOT LIKE '%Signature%' OR (${tagClauses})) AND type NOT LIKE '%Legend%' AND supertype NOT LIKE '%Legend%')`;
+          }
+          return "(type LIKE ? AND supertype NOT LIKE '%Signature%' AND type NOT LIKE '%Legend%' AND supertype NOT LIKE '%Legend%')";
+        }
         if (trimmed !== "Legend") {
-          // Para cualquier otro tipo que no sea Legend (Spell, Gear, Rune, Battlefield),
-          // nos aseguramos de que no se cuele una Legend por error
           return "(type LIKE ? AND type NOT LIKE '%Legend%' AND supertype NOT LIKE '%Legend%')";
         }
         return "type LIKE ?";
       })
       .join(" OR ");
     baseSql += ` AND (${typeClauses})`;
+
     typeList.forEach((t) => {
       const trimmed = t.trim();
       if (trimmed === "Champion") {
         params.push(`%${trimmed}%`, `%${trimmed}%`);
+      } else if (trimmed === "Spell" && legendTags.length > 0) {
+        params.push(`%${trimmed}%`);
+        legendTags.forEach((tag) => params.push(`%${tag.trim()}%`));
       } else {
         params.push(`%${trimmed}%`);
       }
@@ -146,6 +160,27 @@ router.get("/cards", async (req, res) => {
 });
 
 // --- DECK ROUTES ---
+
+// Get random cards for Hero background
+router.get("/cards/random", (req, res) => {
+  const count = parseInt(req.query.count) || 4;
+  // Solo cartas que tengan imagen y que sean de tipos interesantes (Unit, Champion, Legend)
+  const sql = `
+    SELECT image_url 
+    FROM cards 
+    WHERE image_url IS NOT NULL AND image_url != ''
+    ORDER BY RANDOM() 
+    LIMIT ?
+  `;
+
+  db.all(sql, [count], (err, rows) => {
+    if (err) {
+      console.error("Error fetching random cards:", err);
+      return res.status(500).json({ error: err.message });
+    }
+    res.json(rows.map((row) => row.image_url));
+  });
+});
 
 // Get all decks
 router.get("/decks", async (req, res) => {

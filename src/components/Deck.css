@@ -2,7 +2,7 @@
 .deck-container {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 15px;
 }
 
 .deck-container h3 {
@@ -35,8 +35,7 @@
 
 .deck-layout {
   display: grid;
-  gap: 20px;
-  padding: 10px;
+  gap: 15px;
 }
 
 /* Make Battlefields and Main Deck occupy 100% in view mode */

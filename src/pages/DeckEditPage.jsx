@@ -97,17 +97,31 @@ function DeckEditPage() {
   // Initial filter setup ONLY on first load of the deck
   useEffect(() => {
     if (selectedDeck && !filtersInitialized.current && deck.length > 0) {
-      const hasLegend = deck.some((c) => c.type === "Legend" && !c.is_sideboard);
+      const hasLegend = deck.some(
+        (c) => c.type === "Legend" && !c.is_sideboard,
+      );
       const battlefieldsCount = deck.filter(
         (c) => c.type === "Battlefield" && !c.is_sideboard,
       ).length;
 
       if (!hasLegend) {
-        setFilters((prev) => ({ ...prev, type: "Legend", activeSection: "legend" }));
+        setFilters((prev) => ({
+          ...prev,
+          type: "Legend",
+          activeSection: "legend",
+        }));
       } else if (battlefieldsCount < 3) {
-        setFilters((prev) => ({ ...prev, type: "Battlefield", activeSection: "battlefield" }));
+        setFilters((prev) => ({
+          ...prev,
+          type: "Battlefield",
+          activeSection: "battlefield",
+        }));
       } else {
-        setFilters((prev) => ({ ...prev, type: "Unit,Spell,Gear,Champion", activeSection: "main" }));
+        setFilters((prev) => ({
+          ...prev,
+          type: "Unit,Spell,Gear,Champion",
+          activeSection: "main",
+        }));
       }
       filtersInitialized.current = true;
     }
@@ -123,18 +137,26 @@ function DeckEditPage() {
     ).length;
 
     // Auto-advance logic: only trigger if we were in an "auto-filter" state
-    if (hasLegend && filters.type === "Legend" && filters.activeSection === "legend") {
+    if (
+      hasLegend &&
+      filters.type === "Legend" &&
+      filters.activeSection === "legend"
+    ) {
       setFilters((prev) => ({
         ...prev,
         activeSection: battlefieldsCount < 3 ? "battlefield" : "main",
         type:
           battlefieldsCount < 3 ? "Battlefield" : "Unit,Spell,Gear,Champion",
       }));
-    } else if (battlefieldsCount === 3 && filters.type === "Battlefield" && filters.activeSection === "battlefield") {
-      setFilters((prev) => ({ 
-        ...prev, 
+    } else if (
+      battlefieldsCount === 3 &&
+      filters.type === "Battlefield" &&
+      filters.activeSection === "battlefield"
+    ) {
+      setFilters((prev) => ({
+        ...prev,
         activeSection: "main",
-        type: "Unit,Spell,Gear,Champion" 
+        type: "Unit,Spell,Gear,Champion",
       }));
     }
   }, [deck.length, selectedDeck]);
@@ -161,6 +183,14 @@ function DeckEditPage() {
   const fetchCards = useCallback(async () => {
     try {
       const queryParams = new URLSearchParams();
+
+      // Find the legend in the current deck to get its tags
+      const currentLegend = deck.find(
+        (c) => c.type === "Legend" && !c.is_sideboard,
+      );
+      if (currentLegend && currentLegend.tags) {
+        queryParams.append("legendTags", currentLegend.tags);
+      }
 
       // Add basic filters
       if (filters.q) queryParams.append("q", filters.q);

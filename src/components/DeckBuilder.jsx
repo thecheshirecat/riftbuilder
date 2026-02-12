@@ -192,7 +192,7 @@ const DeckBuilder = ({
       {/* Errores Validación */}
       {!isValid && (
         <div className="deck-validation-details">
-          {!hasLegend && <p className="err">Missing Legend (1 required)</p>}
+          {!hasLegend && <p className="err">Missing Legend</p>}
           {battlefieldsCount !== 3 && (
             <p className="err">Battlefields: {battlefieldsCount}/3</p>
           )}
@@ -231,85 +231,87 @@ const DeckBuilder = ({
         </div>
       )}
 
-      {/* Selección Campeón */}
-      {isDeckComplete && validChampions.length > 0 && (
-        <div className="champion-selection-section">
-          <h3>Select Main Champion</h3>
-          <p className="champion-hint">
-            Choose a Champion that shares a tag with your Legend (
-            {legendTags.join(", ")})
-          </p>
-          <div className="champion-grid-select">
-            {validChampions.map((champ) => (
-              <div
-                key={champ.id}
-                className={`champ-select-card ${mainChampionId === champ.id ? "selected" : ""}`}
-                onClick={() => setMainChampionId(selectedDeck.id, champ.id)}
-              >
-                <span className="champ-name">{champ.name}</span>
-                <span className="champ-tags-mini">{champ.tags}</span>
-                {mainChampionId === champ.id && (
-                  <span className="check-mark">✓</span>
-                )}
-              </div>
-            ))}
+      <div className="deck-builder-container">
+        {/* Selección Campeón */}
+        {isDeckComplete && validChampions.length > 0 && (
+          <div className="champion-selection-section">
+            <h3>Select Main Champion</h3>
+            <p className="champion-hint">
+              Choose a Champion that shares a tag with your Legend (
+              {legendTags.join(", ")})
+            </p>
+            <div className="champion-grid-select">
+              {validChampions.map((champ) => (
+                <div
+                  key={champ.id}
+                  className={`champ-select-card ${mainChampionId === champ.id ? "selected" : ""}`}
+                  onClick={() => setMainChampionId(selectedDeck.id, champ.id)}
+                >
+                  <span className="champ-name">{champ.name}</span>
+                  <span className="champ-tags-mini">{champ.tags}</span>
+                  {mainChampionId === champ.id && (
+                    <span className="check-mark">✓</span>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Layout Grid (Única opción en Builder) */}
-      <div className="deck-layout grid-display">
-        <BuilderSection
-          title="Legend"
-          cards={legend ? [legend] : []}
-          limit={1}
-          addCardToDeck={addCardToDeck}
-          removeCardFromDeck={removeCardFromDeck}
-          setSelectedCard={setSelectedCard}
-          onClick={() => onSectionClick && onSectionClick("legend")}
-          isActive={activeSection === "legend"}
-        />
-        <BuilderSection
-          title="Battlefields"
-          cards={battlefields}
-          limit={3}
-          addCardToDeck={addCardToDeck}
-          removeCardFromDeck={removeCardFromDeck}
-          setSelectedCard={setSelectedCard}
-          onClick={() => onSectionClick && onSectionClick("battlefield")}
-          isActive={activeSection === "battlefield"}
-        />
-        <BuilderSection
-          title="Main Deck"
-          cards={mainDeck}
-          limit={40}
-          addCardToDeck={addCardToDeck}
-          removeCardFromDeck={removeCardFromDeck}
-          setSelectedCard={setSelectedCard}
-          onClick={() => onSectionClick && onSectionClick("main")}
-          isActive={activeSection === "main"}
-        />
-        <BuilderSection
-          title="Runes"
-          cards={runes}
-          limit={12}
-          addCardToDeck={addCardToDeck}
-          removeCardFromDeck={removeCardFromDeck}
-          setSelectedCard={setSelectedCard}
-          onClick={() => onSectionClick && onSectionClick("runes")}
-          isActive={activeSection === "runes"}
-        />
-        <BuilderSection
-          title="Sideboard"
-          cards={sideboard}
-          limit={8}
-          addCardToDeck={addCardToDeck}
-          removeCardFromDeck={removeCardFromDeck}
-          setSelectedCard={setSelectedCard}
-          isSideboard={true}
-          onClick={() => onSectionClick && onSectionClick("sideboard")}
-          isActive={activeSection === "sideboard"}
-        />
+        {/* Layout Grid (Única opción en Builder) */}
+        <div className="deck-layout grid-display">
+          <BuilderSection
+            title="Legend"
+            cards={legend ? [legend] : []}
+            limit={1}
+            addCardToDeck={addCardToDeck}
+            removeCardFromDeck={removeCardFromDeck}
+            setSelectedCard={setSelectedCard}
+            onClick={() => onSectionClick && onSectionClick("legend")}
+            isActive={activeSection === "legend"}
+          />
+          <BuilderSection
+            title="Battlefields"
+            cards={battlefields}
+            limit={3}
+            addCardToDeck={addCardToDeck}
+            removeCardFromDeck={removeCardFromDeck}
+            setSelectedCard={setSelectedCard}
+            onClick={() => onSectionClick && onSectionClick("battlefield")}
+            isActive={activeSection === "battlefield"}
+          />
+          <BuilderSection
+            title="Main Deck"
+            cards={mainDeck}
+            limit={40}
+            addCardToDeck={addCardToDeck}
+            removeCardFromDeck={removeCardFromDeck}
+            setSelectedCard={setSelectedCard}
+            onClick={() => onSectionClick && onSectionClick("main")}
+            isActive={activeSection === "main"}
+          />
+          <BuilderSection
+            title="Runes"
+            cards={runes}
+            limit={12}
+            addCardToDeck={addCardToDeck}
+            removeCardFromDeck={removeCardFromDeck}
+            setSelectedCard={setSelectedCard}
+            onClick={() => onSectionClick && onSectionClick("runes")}
+            isActive={activeSection === "runes"}
+          />
+          <BuilderSection
+            title="Sideboard"
+            cards={sideboard}
+            limit={8}
+            addCardToDeck={addCardToDeck}
+            removeCardFromDeck={removeCardFromDeck}
+            setSelectedCard={setSelectedCard}
+            isSideboard={true}
+            onClick={() => onSectionClick && onSectionClick("sideboard")}
+            isActive={activeSection === "sideboard"}
+          />
+        </div>
       </div>
     </div>
   );
