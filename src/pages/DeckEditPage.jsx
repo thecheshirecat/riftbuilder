@@ -16,24 +16,77 @@ import { useToast } from "../components/Toast";
 import "../App.css";
 import "./DeckEditPage.css";
 
+/**
+ * DeckEditPage - Editor interactivo de mazos.
+ * Permite filtrar cartas, añadirlas al mazo/sideboard y gestionar la estructura del mazo.
+ */
 function DeckEditPage() {
   const { deckId } = useParams();
   const navigate = useNavigate();
+  const { showToast } = useToast();
+
+  // -- Hook de Gestión de Mazo --
+  // Lo declaramos al inicio para que esté disponible en los efectos de seguridad
+  const {
+    selectedDeck,
+    deck,
+    cardCounts,
+    setSelectedDeckById,
+    updateDeckMetadata,
+    deleteDeck,
+    addCardToDeck,
+    removeCardFromDeck,
+    setMainChampionId,
+  } = useDeck(parseInt(deckId));
+
+  // -- Referencias para control de flujo --
+  const filtersInitialized = useRef(false);
+  const prevDeckLength = useRef(0);
+  const hasRedirected = useRef(false);
+
+  // -- Seguridad y Autenticación --
+  const user = JSON.parse(localStorage.getItem("riftbound_user"));
+
+  // 1. Bloqueo de acceso si no hay usuario logueado
+  useEffect(() => {
+    if (!user && !hasRedirected.current) {
+      hasRedirected.current = true;
+      showToast("Please login to edit decks", "error");
+      navigate("/login");
+    }
+  }, [user, navigate, showToast]);
+
+  // 2. Verificación de propiedad del mazo una vez cargado
+  useEffect(() => {
+    // Solo verificamos si el mazo ha sido cargado realmente (tiene un user_id del servidor)
+    const isDeckLoaded = selectedDeck && selectedDeck.user_id !== undefined;
+
+    if (
+      isDeckLoaded &&
+      user &&
+      selectedDeck.user_id !== user.id &&
+      !hasRedirected.current
+    ) {
+      hasRedirected.current = true;
+      showToast("You don't have permission to edit this deck.", "error");
+      navigate(`/view/${deckId}`);
+    }
+  }, [selectedDeck, user, navigate, showToast, deckId]);
+
+  // -- Estado Local --
   const [cards, setCards] = useState([]);
   const [availableDomains, setAvailableDomains] = useState([]);
   const [pagination, setPagination] = useState({ current: 1, pages: 1 });
   const [selectedCard, setSelectedCard] = useState(null);
-  const { showToast } = useToast();
-  const filtersInitialized = useRef(false);
-  const prevDeckLength = useRef(0);
 
-  // EL EDITOR SIEMPRE USA GRID
+  // El editor siempre utiliza la vista de cuadrícula para las cartas disponibles
   const viewMode = "grid";
 
+  // -- Configuración de Filtros --
   const [filters, setFilters] = useState({
     q: "",
     domains: [],
-    type: "Legend",
+    type: "Legend", // Por defecto empezamos buscando la Legend
     activeSection: "legend",
     rarity: "",
     energy_min: 0,
@@ -48,36 +101,40 @@ function DeckEditPage() {
     isSideboardContext: false,
   });
 
-  const {
-    selectedDeck,
-    deck,
-    cardCounts,
-    setSelectedDeckById,
-    updateDeckMetadata,
-    deleteDeck,
-    addCardToDeck,
-    removeCardFromDeck,
-    setMainChampionId,
-  } = useDeck(parseInt(deckId));
-
-  // Load domains on mount
+  // 1. Cargar dominios disponibles al montar
   useEffect(() => {
+    // Evitar llamadas si no hay usuario o si ya se ha decidido redirigir
+    if (!user || hasRedirected.current) return;
+
     const loadDomains = async () => {
-      const domains = await api.fetchDomains();
-      setAvailableDomains(domains);
+      try {
+        const domains = await api.fetchDomains();
+        setAvailableDomains(domains);
+      } catch (err) {
+        console.error("Error loading domains:", err);
+      }
     };
     loadDomains();
-  }, []);
+  }, [user]);
 
-  // Sync deckId with hook
+  // 2. Sincronizar el ID del mazo con el hook
   useEffect(() => {
-    if (deckId) {
+    // Evitar llamadas si no hay usuario o si ya se ha decidido redirigir
+    if (deckId && user && !hasRedirected.current) {
       setSelectedDeckById(parseInt(deckId));
     }
-  }, [deckId, setSelectedDeckById]);
+  }, [deckId, setSelectedDeckById, user]);
 
-  // Initial filter setup
+  // 3. Inicialización inteligente de filtros basada en el estado actual del mazo
   useEffect(() => {
+    // Solo inicializamos si somos el dueño y no estamos redirigiendo
+    const isOwner =
+      selectedDeck &&
+      selectedDeck.user_id !== undefined &&
+      user &&
+      selectedDeck.user_id === user.id;
+    if (!isOwner || hasRedirected.current) return;
+
     if (selectedDeck && !filtersInitialized.current && deck.length > 0) {
       const hasLegend = deck.some(
         (c) => c.type === "Legend" && !c.is_sideboard,
@@ -109,8 +166,16 @@ function DeckEditPage() {
     }
   }, [selectedDeck, deck.length]);
 
-  // Auto-advance logic
+  // 4. Lógica de auto-avance: cambia automáticamente de sección al completar requisitos
   useEffect(() => {
+    // Solo auto-avanzar si somos el dueño y no estamos redirigiendo
+    const isOwner =
+      selectedDeck &&
+      selectedDeck.user_id !== undefined &&
+      user &&
+      selectedDeck.user_id === user.id;
+    if (!isOwner || hasRedirected.current) return;
+
     const isAddingCard = deck.length > prevDeckLength.current;
     prevDeckLength.current = deck.length;
 
@@ -143,8 +208,11 @@ function DeckEditPage() {
         type: "Unit,Spell,Gear,Champion",
       }));
     }
-  }, [deck.length, selectedDeck]);
+  }, [deck.length, selectedDeck, filters.type, filters.activeSection]);
 
+  /**
+   * Cambia la sección activa del editor y ajusta los filtros de tipo correspondientes.
+   */
   const handleSectionClick = useCallback((sectionType) => {
     setFilters((prev) => {
       const baseFilters = {
@@ -178,18 +246,22 @@ function DeckEditPage() {
     });
   }, []);
 
+  /**
+   * Obtiene las cartas de la API basándose en los filtros actuales.
+   */
   const fetchCards = useCallback(async () => {
     try {
       const currentLegend = deck.find(
         (c) => c.type === "Legend" && !c.is_sideboard,
       );
+
       const params = {
         ...filters,
         legendTags: currentLegend?.tags || "",
         domains: filters.domains?.join(",") || "",
       };
 
-      // Remove empty or default values to keep URL clean
+      // Limpieza de parámetros para mantener la URL limpia
       Object.keys(params).forEach((key) => {
         if (
           params[key] === "" ||
@@ -208,15 +280,28 @@ function DeckEditPage() {
     }
   }, [filters, deck]);
 
+  // Sincronizar búsqueda de cartas con cambios en filtros
   useEffect(() => {
-    fetchCards();
-  }, [fetchCards]);
+    // Solo buscamos cartas si el usuario está logueado, es dueño del mazo y no estamos redirigiendo
+    const isOwner =
+      selectedDeck &&
+      selectedDeck.user_id !== undefined &&
+      user &&
+      selectedDeck.user_id === user.id;
 
+    if (user && isOwner && !hasRedirected.current) {
+      fetchCards();
+    }
+  }, [fetchCards, user, selectedDeck?.user_id]);
+
+  /**
+   * Gestiona la adición de una carta al mazo con validaciones de reglas de juego.
+   */
   const handleAddCardToDeck = async (card, isSideboard = false) => {
     const targetIsSideboard = filters.isSideboardContext || isSideboard;
     const currentGlobalCopies = cardCounts[card.name] || 0;
 
-    // Validation logic
+    // -- Validaciones Globales --
     if (card.type === "Legend" && currentGlobalCopies >= 1) {
       showToast("You can only have 1 copy of a Legend.", "error");
       return;
@@ -235,6 +320,7 @@ function DeckEditPage() {
       return;
     }
 
+    // -- Lógica para Sideboard --
     if (targetIsSideboard) {
       if (card.type === "Battlefield" || card.type === "Legend") {
         showToast(`${card.type}s cannot be added to the sideboard.`, "error");
@@ -246,9 +332,12 @@ function DeckEditPage() {
         return;
       }
       await addCardToDeck(selectedDeck.id, card.id, true);
-    } else {
+    }
+    // -- Lógica para Mazo Principal --
+    else {
       if (card.type === "Legend") {
         const legend = deck.find((c) => c.type === "Legend" && !c.is_sideboard);
+        // Reemplazar Legend existente si hay una
         if (legend) await removeCardFromDeck(selectedDeck.id, legend.id, false);
         await addCardToDeck(selectedDeck.id, card.id, false);
       } else if (card.type === "Battlefield") {
@@ -266,9 +355,7 @@ function DeckEditPage() {
       } else {
         const mainDeckCount = deck.filter(
           (c) =>
-            c.type !== "Legend" &&
-            c.type !== "Battlefield" &&
-            c.type !== "Rune" &&
+            !["Legend", "Battlefield", "Rune"].includes(c.type) &&
             !c.is_sideboard,
         ).length;
         if (mainDeckCount < 40)
@@ -278,6 +365,9 @@ function DeckEditPage() {
     }
   };
 
+  /**
+   * Elimina el mazo tras confirmación del usuario.
+   */
   const handleDeleteDeck = async (id) => {
     if (window.confirm("Are you certain you want to delete this deck?")) {
       if (await deleteDeck(id)) navigate("/");
@@ -289,12 +379,29 @@ function DeckEditPage() {
     window.scrollTo(0, 0);
   };
 
+  // Si no hay usuario, mostramos un estado de carga mientras redirigimos
+  if (!user) {
+    return <div className="loading">Redirecting to login...</div>;
+  }
+
+  // Si el mazo no pertenece al usuario, mostramos carga mientras redirigimos a la vista
+  // Importante: Solo bloqueamos el renderizado si el mazo YA se ha cargado y hemos confirmado que NO es del usuario
+  if (
+    selectedDeck &&
+    selectedDeck.user_id !== undefined &&
+    user &&
+    selectedDeck.user_id !== user.id
+  ) {
+    return <div className="loading">Redirecting to view mode...</div>;
+  }
+
   if (!selectedDeck) return <div className="loading">Loading deck...</div>;
 
   return (
     <div className="App">
       <main className="App-main">
         <div className="content-grid">
+          {/* Sección Izquierda: Catálogo de Cartas y Filtros */}
           <section className="card-list-section">
             <CardFilters
               filters={filters}
@@ -317,6 +424,7 @@ function DeckEditPage() {
             />
           </section>
 
+          {/* Sección Derecha: Visualización y Gestión del Mazo Actual */}
           <section className="deck-section">
             <Deck
               selectedDeck={selectedDeck}
@@ -342,6 +450,7 @@ function DeckEditPage() {
         </div>
       </main>
 
+      {/* Popup de Detalle de Carta */}
       {selectedCard && (
         <CardDetailPopup
           card={selectedCard}

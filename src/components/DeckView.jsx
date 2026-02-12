@@ -64,6 +64,7 @@ const DeckView = ({
   viewMode,
   setViewMode,
   validation,
+  isOwner,
 }) => {
   const [sortMode, setSortMode] = useState("name"); // 'name', 'energy', 'rarity', 'type'
   const [sortOrder, setSortOrder] = useState("ASC"); // 'ASC', 'DESC'
@@ -143,12 +144,14 @@ const DeckView = ({
         </div>
 
         <div className="nav-right">
-          <button
-            className="nav-action-btn edit"
-            onClick={() => setIsEditingMode(true)}
-          >
-            <span className="btn-icon">✎</span> Edit Deck
-          </button>
+          {isOwner && (
+            <button
+              className="nav-action-btn edit"
+              onClick={() => setIsEditingMode(true)}
+            >
+              <span className="btn-icon">✎</span> Edit Deck
+            </button>
+          )}
           <button className="nav-action-btn share">
             <span className="btn-icon">🔗</span> Share
           </button>

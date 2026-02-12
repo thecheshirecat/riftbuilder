@@ -7,11 +7,13 @@ import "../App.css";
 import "./DeckViewPage.css";
 
 function DeckViewPage() {
+  // -- Hooks y Estado --
   const { deckId } = useParams();
   const navigate = useNavigate();
-  const [viewMode, setViewMode] = useState("grid"); // 'grid' or 'list'
+  const [viewMode, setViewMode] = useState("grid"); // 'grid' (mosaico) o 'list' (lista)
   const [selectedCard, setSelectedCard] = useState(null);
 
+  // Custom hook para la gestión centralizada del mazo
   const {
     selectedDeck,
     deck,
@@ -21,12 +23,20 @@ function DeckViewPage() {
     setMainChampionId,
   } = useDeck(parseInt(deckId));
 
+  // -- Efectos --
+  /**
+   * Asegura que el mazo correcto esté cargado cuando cambia el ID en la URL
+   */
   useEffect(() => {
     if (deckId) {
       setSelectedDeckById(parseInt(deckId));
     }
   }, [deckId, setSelectedDeckById]);
 
+  // -- Handlers --
+  /**
+   * Maneja la eliminación del mazo con confirmación del usuario
+   */
   const handleDeleteDeck = async (id) => {
     if (
       window.confirm(
@@ -40,6 +50,11 @@ function DeckViewPage() {
     }
   };
 
+  // -- Seguridad y Autenticación --
+  const user = JSON.parse(localStorage.getItem("riftbound_user"));
+  const isOwner = selectedDeck && user && selectedDeck.user_id === user.id;
+
+  // -- Renderizado Condicional --
   if (!selectedDeck) return <div className="loading">Loading deck...</div>;
 
   return (
@@ -47,6 +62,10 @@ function DeckViewPage() {
       <main className="App-main">
         <div className="content-grid full-deck">
           <section className="deck-section">
+            {/* 
+                Componente Deck: Se encarga de la visualización principal.
+                isEditingMode={false} indica que estamos en modo lectura.
+            */}
             <Deck
               selectedDeck={selectedDeck}
               deck={deck}
@@ -59,11 +78,13 @@ function DeckViewPage() {
               viewMode={viewMode}
               setViewMode={setViewMode}
               setSelectedCard={setSelectedCard}
+              isOwner={isOwner}
             />
           </section>
         </div>
       </main>
 
+      {/* Popup de detalles de carta al hacer clic en una carta del mazo */}
       {selectedCard && (
         <CardDetailPopup
           card={selectedCard}

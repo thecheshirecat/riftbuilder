@@ -2,6 +2,7 @@ import React from "react";
 import "./LatestDecks.css";
 
 const LatestDecks = ({ decks, isLoading, onSelectDeck, title }) => {
+  // -- Estados de Carga y Vacío --
   if (isLoading) {
     return (
       <div className="latest-decks-section">
@@ -25,6 +26,7 @@ const LatestDecks = ({ decks, isLoading, onSelectDeck, title }) => {
     );
   }
 
+  // -- Renderizado de la Cuadrícula de Mazos --
   return (
     <div className="latest-decks-section">
       {title && <h2 className="section-title">{title}</h2>}
@@ -35,6 +37,7 @@ const LatestDecks = ({ decks, isLoading, onSelectDeck, title }) => {
             className="deck-card-v2"
             onClick={() => onSelectDeck(deck.id)}
           >
+            {/* Imagen del mazo (usando la imagen de la Leyenda o una por defecto) */}
             <div className="deck-card-image">
               <img
                 src={
@@ -49,11 +52,15 @@ const LatestDecks = ({ decks, isLoading, onSelectDeck, title }) => {
               />
               <div className="image-overlay"></div>
             </div>
+
+            {/* Información del mazo */}
             <div className="deck-card-content">
               <div className="deck-info">
                 <h3>{deck.name}</h3>
                 <p>{deck.description || "No description provided."}</p>
               </div>
+
+              {/* Pie de la tarjeta con fecha y botón de acción */}
               <div className="deck-footer">
                 <span className="deck-date">
                   {new Date(deck.updated_at || Date.now()).toLocaleDateString()}
@@ -61,6 +68,8 @@ const LatestDecks = ({ decks, isLoading, onSelectDeck, title }) => {
                 <button className="view-btn">View Deck</button>
               </div>
             </div>
+
+            {/* Efecto visual de brillo */}
             <div className="card-glow"></div>
           </div>
         ))}

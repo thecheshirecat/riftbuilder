@@ -81,7 +81,7 @@ function HomePage() {
               decks={decks.slice(0, 10)}
               isLoading={isLoading}
               onSelectDeck={handleSelectDeck}
-              title="Global Latest Decks"
+              title="Latest Decks"
             />
 
             {decks.length > 10 && (

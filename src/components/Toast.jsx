@@ -37,14 +37,14 @@ const Toast = ({ message, type = 'error', duration = 3000, onExited }) => {
 export const ToastProvider = ({ children }) => {
   const [toasts, setToasts] = useState([]);
 
-  const showToast = (message, type = 'error') => {
+  const showToast = React.useCallback((message, type = 'error') => {
     const id = Date.now();
     setToasts((prev) => [...prev, { id, message, type }]);
-  };
+  }, []);
 
-  const removeToast = (id) => {
+  const removeToast = React.useCallback((id) => {
     setToasts((prev) => prev.filter((toast) => toast.id !== id));
-  };
+  }, []);
 
   return (
     <ToastContext.Provider value={{ showToast }}>

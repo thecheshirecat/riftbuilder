@@ -10,28 +10,35 @@ function MyDecksPage() {
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
   const { showToast } = useToast();
+
+  // -- Referencias --
+  const hasRedirected = React.useRef(false);
+
+  // -- Seguridad y Datos --
   const user = JSON.parse(localStorage.getItem("riftbound_user"));
 
   useEffect(() => {
-    if (!user) {
+    if (!user && !hasRedirected.current) {
+      hasRedirected.current = true;
       showToast("Please login to view your decks", "info");
       navigate("/login");
       return;
     }
 
-    const loadDecks = async () => {
-      try {
-        const data = await api.fetchDecks(user.id);
-        setDecks(data);
-      } catch (err) {
-        console.error("Error loading decks:", err);
-        showToast("Error loading your decks", "error");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadDecks();
+    if (user) {
+      const loadDecks = async () => {
+        try {
+          const data = await api.fetchDecks(user.id);
+          setDecks(data);
+        } catch (err) {
+          console.error("Error loading decks:", err);
+          showToast("Error loading your decks", "error");
+        } finally {
+          setIsLoading(false);
+        }
+      };
+      loadDecks();
+    }
   }, [user, navigate, showToast]);
 
   const handleCreateDeck = async () => {
@@ -49,6 +56,10 @@ function MyDecksPage() {
   const handleSelectDeck = (id) => {
     navigate(`/view/${id}`);
   };
+
+  if (!user || hasRedirected.current) {
+    return <div className="loading">Redirecting to login...</div>;
+  }
 
   return (
     <div className="my-decks-page">
