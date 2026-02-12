@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from "react";
 import CardItem from "./CardItem";
 import { groupCards, sortCards } from "../utils/cardUtils";
+import { useToast } from "./Toast";
 import "./Deck.css";
 import "./DeckView.css";
 
@@ -68,9 +69,54 @@ const DeckView = ({
 }) => {
   const [sortMode, setSortMode] = useState("name"); // 'name', 'energy', 'rarity', 'type'
   const [sortOrder, setSortOrder] = useState("ASC"); // 'ASC', 'DESC'
+  const [showShareMenu, setShowShareMenu] = useState(false);
+  const { showToast } = useToast();
 
   const { legend, battlefields, mainDeck, runes, sideboard, mainChampion } =
     validation;
+
+  /**
+   * Copia la URL actual al portapapeles.
+   */
+  const copyUrl = () => {
+    navigator.clipboard.writeText(window.location.href);
+    setShowShareMenu(false);
+    showToast("URL copied to clipboard!", "success");
+  };
+
+  /**
+   * Exporta la lista de cartas en formato texto (cantidad x nombre).
+   */
+  const exportCardList = () => {
+    const allCards = [];
+    if (legend) allCards.push(`1x ${legend.name}`);
+
+    // Agrupar el resto para contar duplicados si no vienen agrupados
+    const countMap = {};
+    [...battlefields, ...mainDeck, ...runes].forEach((c) => {
+      countMap[c.name] = (countMap[c.name] || 0) + 1;
+    });
+
+    Object.entries(countMap).forEach(([name, qty]) => {
+      allCards.push(`${qty}x ${name}`);
+    });
+
+    if (sideboard && sideboard.length > 0) {
+      allCards.push("\nSideboard:");
+      const sbMap = {};
+      sideboard.forEach((c) => {
+        sbMap[c.name] = (sbMap[c.name] || 0) + 1;
+      });
+      Object.entries(sbMap).forEach(([name, qty]) => {
+        allCards.push(`${qty}x ${name}`);
+      });
+    }
+
+    const text = allCards.join("\n");
+    navigator.clipboard.writeText(text);
+    setShowShareMenu(false);
+    showToast("Card list copied to clipboard!", "success");
+  };
 
   const runesGrouped = useMemo(() => {
     const sorted = sortCards(runes, sortMode, sortOrder);
@@ -152,9 +198,25 @@ const DeckView = ({
               <span className="btn-icon">✎</span> Edit Deck
             </button>
           )}
-          <button className="nav-action-btn share">
-            <span className="btn-icon">🔗</span> Share
-          </button>
+          <div className="share-menu-container">
+            <button
+              className="nav-action-btn share"
+              onClick={() => setShowShareMenu(!showShareMenu)}
+            >
+              <span className="btn-icon">🔗</span> Share
+            </button>
+
+            {showShareMenu && (
+              <div className="share-dropdown">
+                <button className="dropdown-item" onClick={copyUrl}>
+                  <span className="item-icon">📋</span> Copy URL
+                </button>
+                <button className="dropdown-item" onClick={exportCardList}>
+                  <span className="item-icon">📄</span> Export Card List
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </nav>
       <div className={`deck-container view-mode-active ${viewMode}-mode`}>

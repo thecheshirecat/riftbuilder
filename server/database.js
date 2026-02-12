@@ -88,6 +88,7 @@ const initSchema = () => {
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT NOT NULL,
             description TEXT,
+            visibility TEXT DEFAULT 'public',
             main_champion_id TEXT,
             user_id INTEGER,
             FOREIGN KEY (user_id) REFERENCES users (id)
@@ -98,12 +99,16 @@ const initSchema = () => {
         }
         console.log("Decks table initialized.");
 
-        // Migration: Add description column if it doesn't exist
+        // Migration: Add columns if they don't exist
         db.all("PRAGMA table_info(decks)", (err, columns) => {
           if (err) return;
           const hasDescription = columns.some((c) => c.name === "description");
           if (!hasDescription) {
             db.run("ALTER TABLE decks ADD COLUMN description TEXT");
+          }
+          const hasVisibility = columns.some((c) => c.name === "visibility");
+          if (!hasVisibility) {
+            db.run("ALTER TABLE decks ADD COLUMN visibility TEXT DEFAULT 'public'");
           }
           const hasUserId = columns.some((c) => c.name === "user_id");
           if (!hasUserId) {

@@ -16,7 +16,7 @@ function HomePage() {
   useEffect(() => {
     const fetchDecks = async () => {
       try {
-        const data = await api.fetchDecks(); // Sin userId para traer los globales
+        const data = await api.fetchLatestDecks(); // Usar el endpoint de últimos mazos públicos
         setDecks(data);
       } catch (err) {
         console.error("Error fetching decks:", err);

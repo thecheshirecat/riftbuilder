@@ -68,9 +68,6 @@ const LatestDecks = ({ decks, isLoading, onSelectDeck, title }) => {
                 <button className="view-btn">View Deck</button>
               </div>
             </div>
-
-            {/* Efecto visual de brillo */}
-            <div className="card-glow"></div>
           </div>
         ))}
       </div>

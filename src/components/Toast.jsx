@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import './Toast.css';
+import React, { useState, useEffect } from "react";
+import "./Toast.css";
 
-const Toast = ({ message, type = 'error', duration = 3000, onExited }) => {
+const Toast = ({ message, type = "error", duration = 3000, onExited }) => {
   const [visible, setVisible] = useState(true);
 
   useEffect(() => {
@@ -22,14 +22,19 @@ const Toast = ({ message, type = 'error', duration = 3000, onExited }) => {
   }, [visible, onExited]);
 
   return (
-    <div className={`toast-container ${visible ? 'visible' : 'hidden'} ${type}`}>
+    <div
+      className={`toast-container ${visible ? "visible" : "hidden"} ${type}`}
+    >
       <div className="toast-content">
         <span className="toast-icon">
-          {type === 'error' ? '⚠️' : 'ℹ️'}
+          {type === "error" ? "⚠️" : type === "success" ? "✅" : "ℹ️"}
         </span>
         <span className="toast-message">{message}</span>
       </div>
-      <div className="toast-progress-bar" style={{ animationDuration: `${duration}ms` }} />
+      <div
+        className="toast-progress-bar"
+        style={{ animationDuration: `${duration}ms` }}
+      />
     </div>
   );
 };
@@ -37,7 +42,7 @@ const Toast = ({ message, type = 'error', duration = 3000, onExited }) => {
 export const ToastProvider = ({ children }) => {
   const [toasts, setToasts] = useState([]);
 
-  const showToast = React.useCallback((message, type = 'error') => {
+  const showToast = React.useCallback((message, type = "error") => {
     const id = Date.now();
     setToasts((prev) => [...prev, { id, message, type }]);
   }, []);

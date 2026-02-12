@@ -71,12 +71,16 @@ const DeckBuilder = ({
   const [editDesc, setEditDesc] = React.useState(
     selectedDeck.description || "",
   );
+  const [editVisibility, setEditVisibility] = React.useState(
+    selectedDeck.visibility || "public",
+  );
 
   // Sync state with selectedDeck when it changes (especially when starting edit)
   React.useEffect(() => {
     if (isEditingMetadata) {
       setEditName(selectedDeck.name);
       setEditDesc(selectedDeck.description || "");
+      setEditVisibility(selectedDeck.visibility || "public");
     }
   }, [isEditingMetadata, selectedDeck]);
 
@@ -84,6 +88,7 @@ const DeckBuilder = ({
     updateDeckMetadata(selectedDeck.id, {
       name: editName,
       description: editDesc,
+      visibility: editVisibility,
     });
     setIsEditingMetadata(false);
   };
@@ -120,7 +125,7 @@ const DeckBuilder = ({
             <div
               className={`validation-status ${isValid ? "valid" : "invalid"}`}
             >
-              {isValid ? "✅ Valid Deck" : "⚠️ Incomplete"}
+              {isValid ? "✅ Valid Deck" : "Incomplete"}
             </div>
           </div>
           <div className="deck-header-actions">
@@ -154,6 +159,35 @@ const DeckBuilder = ({
                 onChange={(e) => setEditDesc(e.target.value)}
                 placeholder="Add a deck description..."
               />
+              <div className="edit-visibility-selector">
+                <label>Visibility:</label>
+                <div className="visibility-options">
+                  <button
+                    type="button"
+                    className={`visibility-opt ${editVisibility === "public" ? "active" : ""}`}
+                    onClick={() => setEditVisibility("public")}
+                    title="Everyone can see this deck and it will appear in public lists."
+                  >
+                    🌍 Public
+                  </button>
+                  <button
+                    type="button"
+                    className={`visibility-opt ${editVisibility === "unlisted" ? "active" : ""}`}
+                    onClick={() => setEditVisibility("unlisted")}
+                    title="Anyone with the link can see this deck, but it won't appear in public lists."
+                  >
+                    🔗 Unlisted
+                  </button>
+                  <button
+                    type="button"
+                    className={`visibility-opt ${editVisibility === "private" ? "active" : ""}`}
+                    onClick={() => setEditVisibility("private")}
+                    title="Only you can see this deck."
+                  >
+                    🔒 Private
+                  </button>
+                </div>
+              </div>
               <div className="edit-metadata-actions">
                 <button className="btn-save-meta" onClick={handleSaveMetadata}>
                   Save
@@ -175,6 +209,15 @@ const DeckBuilder = ({
               <div className="deck-title-wrapper">
                 <h2 className="deck-title">{selectedDeck.name}</h2>
                 <span className="edit-icon-hint">✎</span>
+                <span
+                  className={`visibility-badge-inline ${selectedDeck.visibility || "public"}`}
+                >
+                  {selectedDeck.visibility === "private"
+                    ? "🔒 Private"
+                    : selectedDeck.visibility === "unlisted"
+                      ? "🔗 Unlisted"
+                      : "🌍 Public"}
+                </span>
               </div>
               {selectedDeck.description && (
                 <p className="deck-description">{selectedDeck.description}</p>
@@ -186,43 +229,47 @@ const DeckBuilder = ({
 
       {/* Errores Validación */}
       {!isValid && (
-        <div className="deck-validation-details">
-          {!hasLegend && <p className="err">Missing Legend</p>}
-          {battlefieldsCount !== 3 && (
-            <p className="err">Battlefields: {battlefieldsCount}/3</p>
-          )}
-          {mainDeckCount !== 40 && (
-            <p className="err">Main Deck: {mainDeckCount}/40</p>
-          )}
-          {runesCount !== 12 && <p className="err">Runes: {runesCount}/12</p>}
-          {!hasSideboardValidSize && (
-            <p className="err highlight">
-              Sideboard: {sideboardCount}/8 (Max 8 exceeded!)
-            </p>
-          )}
-          {!copiesLimitValid &&
-            excessiveCopies.map(([name, count]) => (
-              <p key={name} className="err highlight">
-                ⚠️ Too many copies of '{name}' ({count} total in Main +
-                Sideboard)
+        <div className="deck-validation-container">
+          <div className="deck-validation-details">
+            {!hasLegend && <p className="err">Missing Legend</p>}
+            {battlefieldsCount !== 3 && (
+              <p className="err">Battlefields: {battlefieldsCount}/3</p>
+            )}
+            {mainDeckCount !== 40 && (
+              <p className="err">Main Deck: {mainDeckCount}/40</p>
+            )}
+            {runesCount !== 12 && <p className="err">Runes: {runesCount}/12</p>}
+            {!hasSideboardValidSize && (
+              <p className="err highlight">
+                Sideboard: {sideboardCount}/8 (Max 8 exceeded!)
               </p>
-            ))}
-          {runesCount > 0 && !runesMatchDomain && (
-            <p className="err highlight">
-              ⚠️ Some Runes don't match your Legend's domain (
-              {legendDomains.join(", ")})!
-            </p>
-          )}
-          {isDeckComplete && validChampions.length === 0 && (
-            <p className="err highlight">
-              ⚠️ No Champions in your deck share a tag with {legend?.name}!
-            </p>
-          )}
-          {isDeckComplete && validChampions.length > 0 && !mainChampIsValid && (
-            <p className="err highlight">
-              ⚠️ Please select a valid Main Champion below.
-            </p>
-          )}
+            )}
+            {!copiesLimitValid &&
+              excessiveCopies.map(([name, count]) => (
+                <p key={name} className="err highlight">
+                  ⚠️ Too many copies of '{name}' ({count} total in Main +
+                  Sideboard)
+                </p>
+              ))}
+            {runesCount > 0 && !runesMatchDomain && (
+              <p className="err highlight">
+                ⚠️ Some Runes don't match your Legend's domain (
+                {legendDomains.join(", ")})!
+              </p>
+            )}
+            {isDeckComplete && validChampions.length === 0 && (
+              <p className="err highlight">
+                ⚠️ No Champions in your deck share a tag with {legend?.name}!
+              </p>
+            )}
+            {isDeckComplete &&
+              validChampions.length > 0 &&
+              !mainChampIsValid && (
+                <p className="err highlight">
+                  ⚠️ Please select a valid Main Champion below.
+                </p>
+              )}
+          </div>
         </div>
       )}
 

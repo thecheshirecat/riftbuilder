@@ -34,6 +34,10 @@
   border-left: 4px solid #1890ff;
 }
 
+.toast-container.success {
+  border-left: 4px solid #52c41a;
+}
+
 .toast-container.visible {
   opacity: 1;
   transform: translateX(0);
@@ -78,7 +82,15 @@
   background: #1890ff;
 }
 
+.toast-container.success .toast-progress-bar {
+  background: #52c41a;
+}
+
 @keyframes progress {
-  from { width: 100%; }
-  to { width: 0%; }
+  from {
+    width: 100%;
+  }
+  to {
+    width: 0%;
+  }
 }

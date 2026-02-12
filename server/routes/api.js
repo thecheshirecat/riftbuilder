@@ -234,7 +234,7 @@ router.get("/cards/random", (req, res) => {
 
 // Get all decks
 router.get("/decks", async (req, res) => {
-  const { userId } = req.query;
+  const userId = req.query.userId ? parseInt(req.query.userId) : null;
   try {
     let sql = `
       SELECT d.*, 
@@ -249,6 +249,10 @@ router.get("/decks", async (req, res) => {
     if (userId) {
       sql += " WHERE d.user_id = ?";
       params.push(userId);
+    } else {
+      // Si no hay userId, solo devolver públicos
+      sql +=
+        " WHERE (d.visibility = 'public' OR d.visibility IS NULL OR d.visibility = '')";
     }
     const rows = await allQuery(sql, params);
     res.json(rows);
@@ -257,13 +261,36 @@ router.get("/decks", async (req, res) => {
   }
 });
 
+// Get latest decks
+router.get("/latest-decks", async (req, res) => {
+  try {
+    const sql = `
+      SELECT d.*, u.username,
+        (SELECT c.image_url 
+         FROM cards c 
+         JOIN deck_cards dc ON c.id = dc.card_id 
+         WHERE dc.deck_id = d.id AND c.type = 'Legend' 
+         LIMIT 1) as legend_image
+      FROM decks d
+      LEFT JOIN users u ON d.user_id = u.id
+      WHERE (d.visibility = 'public' OR d.visibility IS NULL OR d.visibility = '')
+      ORDER BY d.id DESC 
+      LIMIT 10
+    `;
+    const decks = await allQuery(sql);
+    res.json(decks);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Create a new deck
 router.post("/decks", async (req, res) => {
-  const { name, userId } = req.body;
+  const { name, userId, visibility } = req.body;
   try {
     const result = await runQuery(
-      "INSERT INTO decks (name, user_id) VALUES (?, ?)",
-      [name, userId || null],
+      "INSERT INTO decks (name, user_id, visibility) VALUES (?, ?, ?)",
+      [name, userId || null, visibility || "public"],
     );
     res.json({ id: result.lastID });
   } catch (err) {
@@ -273,6 +300,7 @@ router.post("/decks", async (req, res) => {
 
 // Get specific deck with cards
 router.get("/decks/:deckId", async (req, res) => {
+  const userId = req.query.userId ? parseInt(req.query.userId) : null;
   try {
     const deckSql = `
       SELECT d.*, 
@@ -287,6 +315,12 @@ router.get("/decks/:deckId", async (req, res) => {
     const deck = await getQuery(deckSql, [req.params.deckId]);
     if (!deck) return res.status(404).json({ error: "Deck not found" });
 
+    // -- Control de Acceso --
+    // Si el mazo es privado, solo el dueño puede verlo
+    if (deck.visibility === "private" && deck.user_id !== userId) {
+      return res.status(403).json({ error: "This deck is private." });
+    }
+
     const cardsSql = `SELECT c.*, dc.is_sideboard FROM cards c
                      JOIN deck_cards dc ON c.id = dc.card_id
                      WHERE dc.deck_id = ?`;
@@ -299,7 +333,7 @@ router.get("/decks/:deckId", async (req, res) => {
 
 // Update deck
 router.patch("/decks/:deckId", async (req, res) => {
-  const { name, description, mainChampionId } = req.body;
+  const { name, description, mainChampionId, visibility } = req.body;
   try {
     if (mainChampionId !== undefined) {
       await runQuery("UPDATE decks SET main_champion_id = ? WHERE id = ?", [
@@ -307,10 +341,28 @@ router.patch("/decks/:deckId", async (req, res) => {
         req.params.deckId,
       ]);
     } else {
-      await runQuery(
-        "UPDATE decks SET name = ?, description = ? WHERE id = ?",
-        [name, description, req.params.deckId],
-      );
+      const updates = [];
+      const params = [];
+      if (name !== undefined) {
+        updates.push("name = ?");
+        params.push(name);
+      }
+      if (description !== undefined) {
+        updates.push("description = ?");
+        params.push(description);
+      }
+      if (visibility !== undefined) {
+        updates.push("visibility = ?");
+        params.push(visibility);
+      }
+
+      if (updates.length > 0) {
+        params.push(req.params.deckId);
+        await runQuery(
+          `UPDATE decks SET ${updates.join(", ")} WHERE id = ?`,
+          params,
+        );
+      }
     }
     res.json({ success: true });
   } catch (err) {

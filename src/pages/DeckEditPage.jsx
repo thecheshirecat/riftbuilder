@@ -45,7 +45,10 @@ function DeckEditPage() {
   const hasRedirected = useRef(false);
 
   // -- Seguridad y Autenticación --
-  const user = JSON.parse(localStorage.getItem("riftbound_user"));
+  const user = useMemo(() => {
+    const savedUser = localStorage.getItem("riftbound_user");
+    return savedUser ? JSON.parse(savedUser) : null;
+  }, []); // El usuario se carga una vez al montar o si se recarga la página
 
   // 1. Bloqueo de acceso si no hay usuario logueado
   useEffect(() => {

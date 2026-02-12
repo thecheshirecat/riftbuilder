@@ -21,7 +21,8 @@ export function useDeck(initialDeckId = 1) {
     async (id = selectedDeck.id) => {
       setIsLoading(true);
       try {
-        const data = await api.fetchDeck(id);
+        const user = JSON.parse(localStorage.getItem("riftbound_user"));
+        const data = await api.fetchDeck(id, user?.id);
         if (data) {
           setSelectedDeck(data);
           setError(null);
@@ -87,9 +88,9 @@ export function useDeck(initialDeckId = 1) {
 
   // Update deck metadata
   const updateDeckMetadata = useCallback(
-    async (deckId, { name, description }) => {
+    async (deckId, { name, description, visibility }) => {
       try {
-        await api.updateDeck(deckId, { name, description });
+        await api.updateDeck(deckId, { name, description, visibility });
         await fetchSelectedDeck(deckId);
       } catch (err) {
         console.error("Error updating metadata:", err);

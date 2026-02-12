@@ -76,7 +76,7 @@ function MyDecksPage() {
             decks={decks}
             isLoading={isLoading}
             onSelectDeck={handleSelectDeck}
-            title="My Personal Decks"
+            title="My Decks"
           />
         </main>
       </div>
