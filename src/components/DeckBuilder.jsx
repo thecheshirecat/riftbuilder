@@ -26,8 +26,32 @@ const BuilderSection = ({
   isSideboard = false,
   onClick,
   isActive,
+  sort,
+  order,
 }) => {
-  const grouped = useMemo(() => groupCards(cards), [cards]);
+  const sortedCards = useMemo(() => {
+    if (!cards || !sort) return cards;
+
+    return [...cards].sort((a, b) => {
+      let valA = a[sort];
+      let valB = b[sort];
+
+      // Handle numeric comparisons for energy, power, might
+      if (typeof valA === "number" && typeof valB === "number") {
+        return order === "ASC" ? valA - valB : valB - valA;
+      }
+
+      // String comparisons
+      valA = String(valA || "").toLowerCase();
+      valB = String(valB || "").toLowerCase();
+
+      if (valA < valB) return order === "ASC" ? -1 : 1;
+      if (valA > valB) return order === "ASC" ? 1 : -1;
+      return 0;
+    });
+  }, [cards, sort, order]);
+
+  const grouped = useMemo(() => groupCards(sortedCards), [sortedCards]);
 
   return (
     <div
@@ -70,6 +94,8 @@ const DeckBuilder = ({
   validation,
   onSectionClick,
   activeSection,
+  sort,
+  order,
 }) => {
   const [isEditingMetadata, setIsEditingMetadata] = React.useState(false);
   const [editName, setEditName] = React.useState(selectedDeck.name);
@@ -269,6 +295,8 @@ const DeckBuilder = ({
             setSelectedCard={setSelectedCard}
             onClick={() => onSectionClick && onSectionClick("legend")}
             isActive={activeSection === "legend"}
+            sort={sort}
+            order={order}
           />
           <BuilderSection
             title="Battlefields"
@@ -279,6 +307,8 @@ const DeckBuilder = ({
             setSelectedCard={setSelectedCard}
             onClick={() => onSectionClick && onSectionClick("battlefield")}
             isActive={activeSection === "battlefield"}
+            sort={sort}
+            order={order}
           />
           <BuilderSection
             title="Main Deck"
@@ -289,6 +319,8 @@ const DeckBuilder = ({
             setSelectedCard={setSelectedCard}
             onClick={() => onSectionClick && onSectionClick("main")}
             isActive={activeSection === "main"}
+            sort={sort}
+            order={order}
           />
           <BuilderSection
             title="Runes"
@@ -299,6 +331,8 @@ const DeckBuilder = ({
             setSelectedCard={setSelectedCard}
             onClick={() => onSectionClick && onSectionClick("runes")}
             isActive={activeSection === "runes"}
+            sort={sort}
+            order={order}
           />
           <BuilderSection
             title="Sideboard"
@@ -310,6 +344,8 @@ const DeckBuilder = ({
             isSideboard={true}
             onClick={() => onSectionClick && onSectionClick("sideboard")}
             isActive={activeSection === "sideboard"}
+            sort={sort}
+            order={order}
           />
         </div>
       </div>

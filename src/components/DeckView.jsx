@@ -131,7 +131,7 @@ const DeckView = ({
   );
 
   return (
-    <div className={`deck-container view-mode-active ${viewMode}-mode`}>
+    <>
       {/* Nuevo Header tipo Menú */}
       <nav className="deck-view-navbar">
         <div className="nav-center">
@@ -208,95 +208,96 @@ const DeckView = ({
           </button>
         </div>
       </nav>
-
-      {/* Hero Section con descripción y metadatos */}
-      <div className="deck-hero-minimal">
-        {selectedDeck.name && <h1>{selectedDeck.name}</h1>}
-        {selectedDeck.description && (
-          <p className="deck-description-text">{selectedDeck.description}</p>
-        )}
-        <div className="deck-stats-bar">
-          <div className="stat-item">
-            <span className="stat-label">Main</span>
-            <span className="stat-value">{mainDeck.length}/40</span>
-          </div>
-          <div className="stat-item">
-            <span className="stat-label">Runes</span>
-            <span className="stat-value">{runes.length}/12</span>
-          </div>
-          <div className="stat-item">
-            <span className="stat-label">Side</span>
-            <span className="stat-value">{sideboard?.length || 0}/8</span>
+      <div className={`deck-container view-mode-active ${viewMode}-mode`}>
+        {/* Hero Section con descripción y metadatos */}
+        <div className="deck-hero-minimal">
+          {selectedDeck.name && <h1>{selectedDeck.name}</h1>}
+          {selectedDeck.description && (
+            <p className="deck-description-text">{selectedDeck.description}</p>
+          )}
+          <div className="deck-stats-bar">
+            <div className="stat-item">
+              <span className="stat-label">Main</span>
+              <span className="stat-value">{mainDeck.length}/40</span>
+            </div>
+            <div className="stat-item">
+              <span className="stat-label">Runes</span>
+              <span className="stat-value">{runes.length}/12</span>
+            </div>
+            <div className="stat-item">
+              <span className="stat-label">Side</span>
+              <span className="stat-value">{sideboard?.length || 0}/8</span>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Identity Showcase */}
-      {legend && (
-        <div className="deck-identity-container">
-          <h2 className="identity-section-title">Deck Identity</h2>
-          <div className="identity-unified-grid">
-            <CardItem
-              card={legend}
-              quantity={1}
-              onRightClick={setSelectedCard}
-              viewMode="grid"
-            />
-            {mainChampion && (
+        {/* Identity Showcase */}
+        {legend && (
+          <div className="deck-identity-container">
+            <h2 className="identity-section-title">Deck Identity</h2>
+            <div className="identity-unified-grid">
               <CardItem
-                card={mainChampion}
+                card={legend}
                 quantity={1}
                 onRightClick={setSelectedCard}
                 viewMode="grid"
               />
-            )}
-            {runesGrouped.map((card, index) => (
-              <CardItem
-                key={`${card.id}-${index}`}
-                card={card}
-                quantity={card.quantity}
-                onRightClick={setSelectedCard}
-                viewMode="grid"
-              />
-            ))}
+              {mainChampion && (
+                <CardItem
+                  card={mainChampion}
+                  quantity={1}
+                  onRightClick={setSelectedCard}
+                  viewMode="grid"
+                />
+              )}
+              {runesGrouped.map((card, index) => (
+                <CardItem
+                  key={`${card.id}-${index}`}
+                  card={card}
+                  quantity={card.quantity}
+                  onRightClick={setSelectedCard}
+                  viewMode="grid"
+                />
+              ))}
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Layout Sections */}
-      <div className={`deck-layout ${viewMode}-display`}>
-        <ViewSection
-          title="Battlefields"
-          cards={battlefields}
-          limit={3}
-          viewMode={viewMode}
-          sortMode={sortMode}
-          sortOrder={sortOrder}
-          setSelectedCard={setSelectedCard}
-        />
-        <ViewSection
-          title="Main Deck"
-          cards={mainDeck}
-          limit={40}
-          viewMode={viewMode}
-          sortMode={sortMode}
-          sortOrder={sortOrder}
-          setSelectedCard={setSelectedCard}
-        />
-
-        {/* Sideboard Section */}
-        {sideboard && sideboard.length > 0 && (
+        {/* Layout Sections */}
+        <div className={`deck-layout ${viewMode}-display`}>
           <ViewSection
-            title="Sideboard"
-            cards={sideboard}
+            title="Battlefields"
+            cards={battlefields}
+            limit={3}
             viewMode={viewMode}
             sortMode={sortMode}
             sortOrder={sortOrder}
             setSelectedCard={setSelectedCard}
           />
-        )}
+          <ViewSection
+            title="Main Deck"
+            cards={mainDeck}
+            limit={40}
+            viewMode={viewMode}
+            sortMode={sortMode}
+            sortOrder={sortOrder}
+            setSelectedCard={setSelectedCard}
+          />
+
+          {/* Sideboard Section */}
+          {sideboard && sideboard.length > 0 && (
+            <ViewSection
+              title="Sideboard"
+              cards={sideboard}
+              viewMode={viewMode}
+              sortMode={sortMode}
+              sortOrder={sortOrder}
+              setSelectedCard={setSelectedCard}
+            />
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

@@ -16,7 +16,14 @@ function Deck(props) {
   const validation = validateDeck(deck, mainChampionId);
 
   if (props.isEditingMode) {
-    return <DeckBuilder {...props} validation={validation} />;
+    return (
+      <DeckBuilder
+        {...props}
+        validation={validation}
+        sort={props.sort}
+        order={props.order}
+      />
+    );
   }
 
   return <DeckView {...props} validation={validation} />;

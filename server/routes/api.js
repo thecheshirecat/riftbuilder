@@ -66,7 +66,10 @@ router.get("/cards", async (req, res) => {
   if (type) {
     const typeList = type.split(",");
     const legendTags = req.query.legendTags
-      ? req.query.legendTags.split(",")
+      ? req.query.legendTags
+          .split(",")
+          .map((t) => t.trim())
+          .filter((t) => t !== "")
       : [];
 
     const typeClauses = typeList
@@ -77,14 +80,6 @@ router.get("/cards", async (req, res) => {
         }
         if (trimmed === "Unit") {
           return "(type LIKE ? AND type NOT LIKE '%Champion%' AND supertype NOT LIKE '%Champion%' AND type NOT LIKE '%Legend%' AND supertype NOT LIKE '%Legend%')";
-        }
-        if (trimmed === "Spell") {
-          // Si es un Spell y tiene supertype Signature, filtrar por tags de la leyenda
-          if (legendTags.length > 0) {
-            const tagClauses = legendTags.map(() => "tags LIKE ?").join(" OR ");
-            return `(type LIKE ? AND (supertype NOT LIKE '%Signature%' OR (${tagClauses})) AND type NOT LIKE '%Legend%' AND supertype NOT LIKE '%Legend%')`;
-          }
-          return "(type LIKE ? AND supertype NOT LIKE '%Signature%' AND type NOT LIKE '%Legend%' AND supertype NOT LIKE '%Legend%')";
         }
         if (trimmed !== "Legend") {
           return "(type LIKE ? AND type NOT LIKE '%Legend%' AND supertype NOT LIKE '%Legend%')";
@@ -98,13 +93,21 @@ router.get("/cards", async (req, res) => {
       const trimmed = t.trim();
       if (trimmed === "Champion") {
         params.push(`%${trimmed}%`, `%${trimmed}%`);
-      } else if (trimmed === "Spell" && legendTags.length > 0) {
-        params.push(`%${trimmed}%`);
-        legendTags.forEach((tag) => params.push(`%${tag.trim()}%`));
       } else {
         params.push(`%${trimmed}%`);
       }
     });
+
+    // RESTRICCIÓN GLOBAL DE SIGNATURE:
+    // Si una carta es Signature, sus tags DEBEN coincidir con los de la leyenda.
+    if (legendTags.length > 0) {
+      const tagClauses = legendTags.map(() => "tags LIKE ?").join(" OR ");
+      baseSql += ` AND (supertype NOT LIKE '%Signature%' OR ${tagClauses})`;
+      legendTags.forEach((tag) => params.push(`%${tag}%`));
+    } else {
+      // Si no hay leyenda seleccionada, no mostramos ninguna Signature
+      baseSql += " AND supertype NOT LIKE '%Signature%'";
+    }
   }
 
   // Stat Range Filters

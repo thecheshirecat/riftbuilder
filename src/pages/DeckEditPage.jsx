@@ -408,6 +408,8 @@ function DeckEditPage() {
               setSelectedCard={setSelectedCard}
               onSectionClick={handleSectionClick}
               activeSection={filters.activeSection}
+              sort={filters.sort}
+              order={filters.order}
             />
           </section>
         </div>
