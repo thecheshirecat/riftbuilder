@@ -61,15 +61,11 @@ function MyDecksPage() {
         </header>
 
         <main className="decks-section">
-          <div className="section-header">
-            <h2>My Decks</h2>
-            <div className="header-line"></div>
-          </div>
-
           <LatestDecks
             decks={decks}
             isLoading={isLoading}
             onSelectDeck={handleSelectDeck}
+            title="My Personal Decks"
           />
         </main>
       </div>

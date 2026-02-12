@@ -1,3 +1,17 @@
+.latest-decks-section {
+  width: 100%;
+}
+
+.section-title {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #f8fafc;
+  margin-bottom: 30px;
+  text-align: left;
+  letter-spacing: -0.025em;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
 .latest-decks-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));

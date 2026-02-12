@@ -34,7 +34,6 @@
   backdrop-filter: blur(10px);
   padding: 3rem 2rem;
   border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   max-width: 800px;
@@ -98,24 +97,9 @@
   line-height: 1.5rem;
 }
 
-/* My Decks Section Header */
-.section-header {
-  margin-bottom: 30px;
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
-
-.section-header h2 {
-  font-size: 1.8rem;
-  color: #f1f5f9;
-  white-space: nowrap;
-}
-
 .landing-content {
   width: 100%;
   max-width: 1200px;
-  padding: 0 20px 60px;
 }
 
 /* Recent Decks Section */

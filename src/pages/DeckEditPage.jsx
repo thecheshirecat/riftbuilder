@@ -293,18 +293,6 @@ function DeckEditPage() {
 
   return (
     <div className="App">
-      <header className="App-header">
-        <div className="header-content">
-          <button
-            className="back-btn"
-            onClick={() => navigate(`/view/${deckId}`)}
-          >
-            ← Back to View
-          </button>
-          <h1>Editing: {selectedDeck.name}</h1>
-        </div>
-      </header>
-
       <main className="App-main">
         <div className="content-grid">
           <section className="card-list-section">

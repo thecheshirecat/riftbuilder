@@ -44,15 +44,6 @@ function DeckViewPage() {
 
   return (
     <div className="App">
-      <header className="App-header">
-        <div className="header-content">
-          <button className="back-btn" onClick={() => navigate("/")}>
-            ← Back to Home
-          </button>
-          <h1>Riftbuilder</h1>
-        </div>
-      </header>
-
       <main className="App-main">
         <div className="content-grid full-deck">
           <section className="deck-section">

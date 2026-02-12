@@ -77,15 +77,11 @@ function HomePage() {
 
         <div className="landing-content">
           <section className="saved-decks-section">
-            <div className="section-header">
-              <h2>Recent Decks</h2>
-              <div className="header-line"></div>
-            </div>
-
             <LatestDecks
               decks={decks.slice(0, 10)}
               isLoading={isLoading}
               onSelectDeck={handleSelectDeck}
+              title="Global Latest Decks"
             />
 
             {decks.length > 10 && (
