@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "seed": "node sync_cards.js force",
-    "sync": "node sync_cards.js",
+    "seed": "node scripts/sync.js force",
+    "sync": "node scripts/sync.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

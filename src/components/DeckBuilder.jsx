@@ -175,8 +175,12 @@ const DeckBuilder = ({
             <div
               className="deck-title-area clickable"
               onClick={() => setIsEditingMetadata(true)}
+              title="Click to edit deck name and description"
             >
-              <h2 className="deck-title">{selectedDeck.name}</h2>
+              <div className="deck-title-wrapper">
+                <h2 className="deck-title">{selectedDeck.name}</h2>
+                <span className="edit-icon-hint">✎</span>
+              </div>
               {selectedDeck.description && (
                 <p className="deck-description">{selectedDeck.description}</p>
               )}
@@ -263,7 +267,7 @@ const DeckBuilder = ({
           removeCardFromDeck={removeCardFromDeck}
           setSelectedCard={setSelectedCard}
           onClick={() => onSectionClick && onSectionClick("legend")}
-          isActive={activeSection === "Legend"}
+          isActive={activeSection === "legend"}
         />
         <BuilderSection
           title="Battlefields"
@@ -273,7 +277,7 @@ const DeckBuilder = ({
           removeCardFromDeck={removeCardFromDeck}
           setSelectedCard={setSelectedCard}
           onClick={() => onSectionClick && onSectionClick("battlefield")}
-          isActive={activeSection === "Battlefield"}
+          isActive={activeSection === "battlefield"}
         />
         <BuilderSection
           title="Main Deck"
@@ -283,7 +287,7 @@ const DeckBuilder = ({
           removeCardFromDeck={removeCardFromDeck}
           setSelectedCard={setSelectedCard}
           onClick={() => onSectionClick && onSectionClick("main")}
-          isActive={activeSection === "Unit,Spell,Gear,Champion"}
+          isActive={activeSection === "main"}
         />
         <BuilderSection
           title="Runes"
@@ -293,7 +297,7 @@ const DeckBuilder = ({
           removeCardFromDeck={removeCardFromDeck}
           setSelectedCard={setSelectedCard}
           onClick={() => onSectionClick && onSectionClick("runes")}
-          isActive={activeSection === "Rune"}
+          isActive={activeSection === "runes"}
         />
         <BuilderSection
           title="Sideboard"
@@ -304,7 +308,7 @@ const DeckBuilder = ({
           setSelectedCard={setSelectedCard}
           isSideboard={true}
           onClick={() => onSectionClick && onSectionClick("sideboard")}
-          isActive={activeSection === "Unit,Spell,Gear,Champion,Rune"}
+          isActive={activeSection === "sideboard"}
         />
       </div>
     </div>

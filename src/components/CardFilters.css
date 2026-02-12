@@ -260,7 +260,13 @@
   pointer-events: none;
 }
 
-/* Panel Avanzado */
+.domain-fallback-text {
+  font-size: 0.7rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: white;
+  text-align: center;
+}
 .advanced-filters-panel {
   max-height: 0;
   overflow: hidden;

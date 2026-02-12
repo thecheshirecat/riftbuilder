@@ -1,12 +1,10 @@
 const express = require("express");
 const cors = require("cors");
 const { initSchema } = require("./database");
-const syncCards = require("./sync_cards");
-const syncDomains = require("./sync_domains");
+const { fullSync } = require("./scripts/sync");
 
-// Import Routes
-const cardRoutes = require("./routes/cards");
-const deckRoutes = require("./routes/decks");
+// Import Unified Routes
+const apiRoutes = require("./routes/api");
 
 const app = express();
 const port = 3001;
@@ -18,29 +16,23 @@ app.use(express.json());
 // Initialize Database Schema
 initSchema();
 
-// Register Routes
-app.use("/api/cards", cardRoutes);
-app.use("/api/decks", deckRoutes);
+// Register Unified API Routes
+app.use("/api", apiRoutes);
 
-// Helper for domains (Legacy path sometimes used)
-app.use("/api/domains", (req, res, next) => {
-    req.url = "/domains";
-    cardRoutes(req, res, next);
-});
+// The /api/domains route is now handled directly inside cardRoutes
+// and we can remove the legacy redirect logic that was here.
 
 // Start Server
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
-  
+
   // Initial database sync
-  syncDomains();
-  syncCards();
+  fullSync();
 
   // Scheduled daily card and domain sync
   const DAILY_INTERVAL = 24 * 60 * 60 * 1000;
   setInterval(() => {
     console.log("Running scheduled daily card and domain sync...");
-    syncDomains();
-    syncCards();
+    fullSync();
   }, DAILY_INTERVAL);
 });

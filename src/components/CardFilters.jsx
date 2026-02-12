@@ -66,7 +66,9 @@ function CardFilters({
     "Sort by Name";
 
   // Filter out 'Colorless' as requested
-  const filteredDomains = availableDomains.filter((d) => d !== "Colorless");
+  const filteredDomains = (availableDomains || []).filter(
+    (d) => d !== "Colorless",
+  );
 
   const handleStatChange = (name, value, isMin, maxLimit) => {
     const val = safeParse(value, 0);
@@ -225,7 +227,6 @@ function CardFilters({
           {filteredDomains.map((d) => {
             const isSelected = filters.domains.includes(d);
             const iconSrc = domainIcons[d];
-            if (!iconSrc) return null;
 
             return (
               <div
@@ -244,7 +245,11 @@ function CardFilters({
                 }}
                 title={d}
               >
-                <img src={iconSrc} alt={d} />
+                {iconSrc ? (
+                  <img src={iconSrc} alt={d} />
+                ) : (
+                  <span className="domain-fallback-text">{d}</span>
+                )}
               </div>
             );
           })}
@@ -300,23 +305,36 @@ function CardFilters({
                         "Legend",
                       ].includes(type);
 
-                      // Lógica de deshabilitación:
-                      // 1. Si hay algo de "Special" (Legend/Rune/BF) seleccionado, se deshabilita todo lo demás que no sea ese tipo específico.
-                      // 2. Si hay algo de "Main Deck" seleccionado, se deshabilitan todos los "Special".
-                      const hasSpecialSelected = activeTypes.some((t) =>
-                        ["Rune", "Battlefield", "Legend"].includes(t),
-                      );
-                      const hasMainDeckSelected = activeTypes.some((t) =>
-                        ["Unit", "Spell", "Gear", "Champion"].includes(t),
-                      );
-
+                      // Lógica de deshabilitación basada en la sección activa (Deck Builder context)
+                      const activeSection = filters.activeSection;
                       let isDisabled = false;
-                      if (hasSpecialSelected) {
-                        // Si hay una Legend, solo ella puede estar seleccionada.
-                        isDisabled = !isSelected;
-                      } else if (hasMainDeckSelected) {
-                        // Si hay algo de Main Deck, las especiales se bloquean.
-                        isDisabled = isSpecialType;
+
+                      if (activeSection === "legend") {
+                        isDisabled = type !== "Legend";
+                      } else if (activeSection === "battlefield") {
+                        isDisabled = type !== "Battlefield";
+                      } else if (activeSection === "runes") {
+                        isDisabled = type !== "Rune";
+                      } else if (activeSection === "main") {
+                        // En Main Deck solo permitimos Unit, Spell, Gear, Champion
+                        isDisabled = !["Unit", "Spell", "Gear", "Champion"].includes(type);
+                      } else if (activeSection === "sideboard") {
+                        // En Sideboard permitimos casi todo menos Battlefield y Legend
+                        isDisabled = ["Battlefield", "Legend"].includes(type);
+                      } else {
+                        // Fallback a lógica original si no hay sección activa (ej: vista pública)
+                        const hasSpecialSelected = activeTypes.some((t) =>
+                          ["Rune", "Battlefield", "Legend"].includes(t),
+                        );
+                        const hasMainDeckSelected = activeTypes.some((t) =>
+                          ["Unit", "Spell", "Gear", "Champion"].includes(t),
+                        );
+
+                        if (hasSpecialSelected) {
+                          isDisabled = !isSelected;
+                        } else if (hasMainDeckSelected) {
+                          isDisabled = isSpecialType;
+                        }
                       }
 
                       return (

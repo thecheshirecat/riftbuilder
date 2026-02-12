@@ -1,4 +1,40 @@
-/* DeckBuilder-specific styles */
+.deck-title-area.clickable {
+  padding: 10px;
+  margin: -10px;
+  border-radius: 12px;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+
+.deck-title-area.clickable:hover {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.deck-title-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.edit-icon-hint {
+  font-size: 1.2rem;
+  color: var(--primary);
+  opacity: 0;
+  transition: all 0.2s ease;
+  transform: translateX(-5px);
+}
+
+.deck-title-area.clickable:hover .edit-icon-hint {
+  opacity: 0.6;
+  transform: translateX(0);
+}
+
+.deck-title-area.clickable:hover .deck-title {
+  color: var(--primary);
+}
+
+/* Rest of the file */
 .deck-header-actions {
   display: flex;
   gap: 10px;

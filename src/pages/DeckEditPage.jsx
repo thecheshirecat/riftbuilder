@@ -28,6 +28,7 @@ function DeckEditPage() {
     q: "",
     domains: [],
     type: "Legend",
+    activeSection: "legend", // New state to track the active section
     rarity: "",
     energy_min: 0,
     energy_max: 12,
@@ -67,6 +68,7 @@ function DeckEditPage() {
         might_max: 12,
         page: 1,
         isSideboardContext: sectionType === "sideboard",
+        activeSection: sectionType, // Update active section
       };
 
       switch (sectionType) {
@@ -94,27 +96,21 @@ function DeckEditPage() {
 
   // Initial filter setup ONLY on first load of the deck
   useEffect(() => {
-    if (!selectedDeck || filtersInitialized.current || deck.length === 0)
-      return;
+    if (selectedDeck && !filtersInitialized.current && deck.length > 0) {
+      const hasLegend = deck.some((c) => c.type === "Legend" && !c.is_sideboard);
+      const battlefieldsCount = deck.filter(
+        (c) => c.type === "Battlefield" && !c.is_sideboard,
+      ).length;
 
-    const hasLegend = deck.some((c) => c.type === "Legend" && !c.is_sideboard);
-    const battlefieldsCount = deck.filter(
-      (c) => c.type === "Battlefield" && !c.is_sideboard,
-    ).length;
-
-    if (hasLegend && battlefieldsCount === 3) {
-      setFilters((prev) => ({
-        ...prev,
-        type: "Unit,Spell,Gear,Champion",
-        isSideboardContext: false,
-      }));
-    } else if (!hasLegend) {
-      setFilters((prev) => ({ ...prev, type: "Legend" }));
-    } else if (battlefieldsCount < 3) {
-      setFilters((prev) => ({ ...prev, type: "Battlefield" }));
+      if (!hasLegend) {
+        setFilters((prev) => ({ ...prev, type: "Legend", activeSection: "legend" }));
+      } else if (battlefieldsCount < 3) {
+        setFilters((prev) => ({ ...prev, type: "Battlefield", activeSection: "battlefield" }));
+      } else {
+        setFilters((prev) => ({ ...prev, type: "Unit,Spell,Gear,Champion", activeSection: "main" }));
+      }
+      filtersInitialized.current = true;
     }
-
-    filtersInitialized.current = true;
   }, [selectedDeck, deck.length === 0]); // Only run when deck goes from empty to loaded or on first load
 
   // Helper to clear auto-filters when requirements are met
@@ -127,14 +123,19 @@ function DeckEditPage() {
     ).length;
 
     // Auto-advance logic: only trigger if we were in an "auto-filter" state
-    if (hasLegend && filters.type === "Legend") {
+    if (hasLegend && filters.type === "Legend" && filters.activeSection === "legend") {
       setFilters((prev) => ({
         ...prev,
+        activeSection: battlefieldsCount < 3 ? "battlefield" : "main",
         type:
           battlefieldsCount < 3 ? "Battlefield" : "Unit,Spell,Gear,Champion",
       }));
-    } else if (battlefieldsCount === 3 && filters.type === "Battlefield") {
-      setFilters((prev) => ({ ...prev, type: "Unit,Spell,Gear,Champion" }));
+    } else if (battlefieldsCount === 3 && filters.type === "Battlefield" && filters.activeSection === "battlefield") {
+      setFilters((prev) => ({ 
+        ...prev, 
+        activeSection: "main",
+        type: "Unit,Spell,Gear,Champion" 
+      }));
     }
   }, [deck.length, selectedDeck]);
 
@@ -376,9 +377,7 @@ function DeckEditPage() {
               setViewMode={() => {}} // Deshabilitado en edición
               setSelectedCard={setSelectedCard}
               onSectionClick={handleSectionClick}
-              activeSection={
-                filters.isSideboardContext ? "sideboard" : filters.type
-              }
+              activeSection={filters.activeSection}
             />
           </section>
         </div>
