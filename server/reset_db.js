@@ -26,6 +26,8 @@ db.serialize(() => {
         rarity TEXT,
         energy INTEGER,
         plain_text TEXT,
+        set_id TEXT,
+        label TEXT,
         power INTEGER,
         might INTEGER,
         image_url TEXT
@@ -35,7 +37,7 @@ db.serialize(() => {
         return console.error(err.message);
       }
       console.log("Cards table created.");
-    }
+    },
   );
 });
 

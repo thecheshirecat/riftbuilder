@@ -23,61 +23,110 @@ function CardDetailPopup({ card, onClose, onAdd }) {
 
   const showAddButtons = !!onAdd;
 
-  const renderTextWithIcons = (text) => {
-    if (!text) return null;
+  const renderCardText = () => {
+    // Prioridad absoluta al Rich Text de la API (contiene HTML con iconos y saltos de línea)
+    if (card.rich_text) {
+      // 1. Reemplazamos los <br /> por saltos de línea reales para que pre-wrap los reconozca
+      // 2. Limpiamos los tokens que la API no procesó (:rb_might:, :rb_energy_X:, etc.)
+      const cleanRichText = card.rich_text
+        .replace(/<br\s*\/?>/gi, "\n")
+        .replace(
+          /:rb_exhaust:/g,
+          `<img src="${tapIcon}" alt="Exhaust" class="text-icon" />`,
+        )
+        .replace(
+          /:rb_might:/g,
+          `<img src="${mightIcon}" alt="Might" class="text-icon" />`,
+        )
+        .replace(
+          /:rb_energy_(\d+):/g,
+          (match, val) => `<span class="energy-circle-icon">${val}</span>`,
+        )
+        .replace(/:rb_rune_(\w+):/g, (match, domain) => {
+          if (domain === "rainbow")
+            return `<strong class="rune-text-replacement">[Rune]</strong>`;
+          const iconSrc = domainIcons[domain.toLowerCase()];
+          return iconSrc
+            ? `<img src="${iconSrc}" alt="${domain}" class="text-icon rune-icon" />`
+            : `[${domain}]`;
+        });
 
-    // Split by tokens including :rb_energy_X: and :rb_rune_DOMAIN:
-    const parts = text.split(
+      return (
+        <div
+          className="rich-text-content"
+          dangerouslySetInnerHTML={{ __html: cleanRichText }}
+        />
+      );
+    }
+
+    // Fallback al texto plano procesado si no hay rich_text
+    const textToProcess = card.plain_text || card.text;
+    if (!textToProcess) return null;
+
+    // Lógica de procesamiento manual de iconos (solo como respaldo)
+    const parts = textToProcess.split(
       /(:rb_exhaust:|:rb_might:|:rb_energy_\d+:|:rb_rune_\w+:)/g,
     );
 
-    return parts.map((part, index) => {
-      if (part === ":rb_exhaust:") {
-        return (
-          <img key={index} src={tapIcon} alt="Exhaust" className="text-icon" />
-        );
-      }
-      if (part === ":rb_might:") {
-        return (
-          <img key={index} src={mightIcon} alt="Might" className="text-icon" />
-        );
-      }
-      if (part.startsWith(":rb_energy_")) {
-        const energyValue = part.match(/\d+/)[0];
-        return (
-          <span key={index} className="energy-circle-icon">
-            {energyValue}
-          </span>
-        );
-      }
-      if (part.startsWith(":rb_rune_")) {
-        const domain = part
-          .replace(":rb_rune_", "")
-          .replace(":", "")
-          .toLowerCase();
-
-        if (domain === "rainbow") {
-          return (
-            <strong key={index} className="rune-text-replacement">
-              [Rune]
-            </strong>
-          );
-        }
-
-        const iconSrc = domainIcons[domain];
-        if (iconSrc) {
-          return (
-            <img
-              key={index}
-              src={iconSrc}
-              alt={domain}
-              className="text-icon rune-icon"
-            />
-          );
-        }
-      }
-      return part;
-    });
+    return (
+      <div className="rich-text-content">
+        <p>
+          {parts.map((part, index) => {
+            if (part === ":rb_exhaust:") {
+              return (
+                <img
+                  key={index}
+                  src={tapIcon}
+                  alt="Exhaust"
+                  className="text-icon"
+                />
+              );
+            }
+            if (part === ":rb_might:") {
+              return (
+                <img
+                  key={index}
+                  src={mightIcon}
+                  alt="Might"
+                  className="text-icon"
+                />
+              );
+            }
+            if (part.startsWith(":rb_energy_")) {
+              const energyValue = part.match(/\d+/)[0];
+              return (
+                <span key={index} className="energy-circle-icon">
+                  {energyValue}
+                </span>
+              );
+            }
+            if (part.startsWith(":rb_rune_")) {
+              const domain = part
+                .replace(":rb_rune_", "")
+                .replace(":", "")
+                .toLowerCase();
+              if (domain === "rainbow")
+                return (
+                  <strong key={index} className="rune-text-replacement">
+                    [Rune]
+                  </strong>
+                );
+              const iconSrc = domainIcons[domain];
+              if (iconSrc)
+                return (
+                  <img
+                    key={index}
+                    src={iconSrc}
+                    alt={domain}
+                    className="text-icon rune-icon"
+                  />
+                );
+            }
+            return part;
+          })}
+        </p>
+      </div>
+    );
   };
 
   return (
@@ -97,16 +146,25 @@ function CardDetailPopup({ card, onClose, onAdd }) {
 
             <div className="popup-stats">
               <span className="stat-badge type">{card.type}</span>
-              {card.energy !== undefined && (
+              {card.label && (
+                <span className="stat-badge set">{card.label}</span>
+              )}
+              {card.energy !== undefined && card.energy > 0 && (
                 <span className="stat-badge energy">Energy: {card.energy}</span>
               )}
             </div>
 
-            {card.plain_text && (
-              <div className="popup-text">
-                <p>{renderTextWithIcons(card.plain_text)}</p>
+            {card.tags && (
+              <div className="popup-tags">
+                {card.tags.split(", ").map((tag, index) => (
+                  <span key={index} className="tag-pill">
+                    {tag}
+                  </span>
+                ))}
               </div>
             )}
+
+            <div className="popup-text">{renderCardText()}</div>
 
             {card.type === "Creature" &&
               (card.power !== undefined || card.might !== undefined) && (

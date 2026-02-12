@@ -12,9 +12,9 @@ const db = new sqlite3.Database(dbPath, (err) => {
 });
 
 const initSchema = () => {
-    db.serialize(() => {
-        db.run(
-          `CREATE TABLE IF NOT EXISTS cards (
+  db.serialize(() => {
+    db.run(
+      `CREATE TABLE IF NOT EXISTS cards (
               id TEXT PRIMARY KEY,
               name TEXT,
               domain TEXT,
@@ -24,44 +24,64 @@ const initSchema = () => {
               rarity TEXT,
               energy INTEGER,
               plain_text TEXT,
+              rich_text TEXT,
+              set_id TEXT,
+              label TEXT,
               power INTEGER,
               might INTEGER,
               image_url TEXT
           )`,
-          (err) => {
-            if (err) {
-              return console.error("Error creating cards table: " + err.message);
-            }
-            console.log("Cards table initialized.");
+      (err) => {
+        if (err) {
+          return console.error("Error creating cards table: " + err.message);
+        }
+        console.log("Cards table initialized.");
+
+        // Migration: Add rich_text, set_id and label columns if they don't exist
+        db.all("PRAGMA table_info(cards)", (err, columns) => {
+          if (err) return;
+          const hasRichText = columns.some((c) => c.name === "rich_text");
+          if (!hasRichText) {
+            db.run("ALTER TABLE cards ADD COLUMN rich_text TEXT");
           }
-        );
-    
-        db.run(
-          `CREATE TABLE IF NOT EXISTS decks (
+          const hasSetId = columns.some((c) => c.name === "set_id");
+          if (!hasSetId) {
+            db.run("ALTER TABLE cards ADD COLUMN set_id TEXT");
+          }
+          const hasLabel = columns.some((c) => c.name === "label");
+          if (!hasLabel) {
+            db.run("ALTER TABLE cards ADD COLUMN label TEXT");
+          }
+        });
+      },
+    );
+
+    db.run(
+      `CREATE TABLE IF NOT EXISTS decks (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT NOT NULL,
             description TEXT,
             main_champion_id TEXT
         )`,
-          (err) => {
-            if (err) {
-              return console.error("Error creating decks table: " + err.message);
-            }
-            console.log("Decks table initialized.");
-            
-            // Migration: Add description column if it doesn't exist
-            db.all("PRAGMA table_info(decks)", (err, columns) => {
-              if (err) return;
-              const hasDescription = columns.some(c => c.name === 'description');
-              if (!hasDescription) {
-                db.run("ALTER TABLE decks ADD COLUMN description TEXT");
-              }
-            });
+      (err) => {
+        if (err) {
+          return console.error("Error creating decks table: " + err.message);
+        }
+        console.log("Decks table initialized.");
+
+        // Migration: Add description column if it doesn't exist
+        db.all("PRAGMA table_info(decks)", (err, columns) => {
+          if (err) return;
+          const hasDescription = columns.some((c) => c.name === "description");
+          if (!hasDescription) {
+            db.run("ALTER TABLE decks ADD COLUMN description TEXT");
           }
-        );
-    
-        db.run(
-          `CREATE TABLE IF NOT EXISTS deck_cards (
+        });
+      },
+    );
+
+    db.run(
+      `CREATE TABLE IF NOT EXISTS deck_cards (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             deck_id INTEGER,
             card_id TEXT,
@@ -69,35 +89,39 @@ const initSchema = () => {
             FOREIGN KEY (deck_id) REFERENCES decks (id),
             FOREIGN KEY (card_id) REFERENCES cards (id)
         )`,
-          (err) => {
-            if (err) {
-              return console.error("Error creating deck_cards table :" + err.message);
-            }
-            console.log("Deck_cards table initialized.");
+      (err) => {
+        if (err) {
+          return console.error(
+            "Error creating deck_cards table :" + err.message,
+          );
+        }
+        console.log("Deck_cards table initialized.");
 
-            // Migration: Add is_sideboard column if it doesn't exist
-            db.all("PRAGMA table_info(deck_cards)", (err, columns) => {
-              if (err) return;
-              const hasSideboard = columns.some(c => c.name === 'is_sideboard');
-              if (!hasSideboard) {
-                db.run("ALTER TABLE deck_cards ADD COLUMN is_sideboard INTEGER DEFAULT 0");
-              }
-            });
+        // Migration: Add is_sideboard column if it doesn't exist
+        db.all("PRAGMA table_info(deck_cards)", (err, columns) => {
+          if (err) return;
+          const hasSideboard = columns.some((c) => c.name === "is_sideboard");
+          if (!hasSideboard) {
+            db.run(
+              "ALTER TABLE deck_cards ADD COLUMN is_sideboard INTEGER DEFAULT 0",
+            );
           }
-        );
+        });
+      },
+    );
 
-        db.run(
-            `CREATE TABLE IF NOT EXISTS domains (
+    db.run(
+      `CREATE TABLE IF NOT EXISTS domains (
               name TEXT PRIMARY KEY
           )`,
-            (err) => {
-              if (err) {
-                return console.error("Error creating domains table :" + err.message);
-              }
-              console.log("Domains table initialized.");
-            }
-          );
-      });
+      (err) => {
+        if (err) {
+          return console.error("Error creating domains table :" + err.message);
+        }
+        console.log("Domains table initialized.");
+      },
+    );
+  });
 };
 
 module.exports = { db, initSchema };

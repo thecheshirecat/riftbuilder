@@ -49,7 +49,7 @@ function DeckViewPage() {
           <button className="back-btn" onClick={() => navigate("/")}>
             ← Back to Home
           </button>
-          <h1>{selectedDeck.name} | Riftbound</h1>
+          <h1>Riftbuilder</h1>
         </div>
       </header>
 

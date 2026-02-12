@@ -54,7 +54,9 @@ export const validateDeck = (deck, mainChampionId) => {
     (c) => c.type === "Champion" || c.supertype === "Champion",
   );
 
-  const mainChampion = champions.find((c) => c.id === mainChampionId);
+  const mainChampion = champions.find(
+    (c) => String(c.id) === String(mainChampionId),
+  );
 
   // Basic Requirements
   const hasLegend = !!legend;
@@ -64,10 +66,7 @@ export const validateDeck = (deck, mainChampionId) => {
   const sideboardCount = sideboard.length;
   const hasSideboardValidSize = sideboardCount <= 8;
   const isDeckComplete =
-    hasLegend &&
-    hasThreeBattlefields &&
-    hasFortyMainCards &&
-    hasTwelveRunes;
+    hasLegend && hasThreeBattlefields && hasFortyMainCards && hasTwelveRunes;
 
   // Copies Limit Check (Global: Main + Sideboard)
   const globalCardCounts = {};
@@ -145,6 +144,7 @@ export const validateDeck = (deck, mainChampionId) => {
     excessiveCopies,
     runesMatchDomain,
     validChampions,
+    mainChampion,
     mainChampIsValid,
     legend,
     battlefields,

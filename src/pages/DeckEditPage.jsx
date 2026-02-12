@@ -6,6 +6,7 @@ import Deck from "../components/Deck";
 import CardDetailPopup from "../components/CardDetailPopup";
 import { useDeck } from "../hooks/useDeck";
 import { validateDeck, getGlobalCardCounts } from "../utils/cardUtils";
+import { useToast } from "../components/Toast";
 import "../App.css";
 import "./DeckEditPage.css";
 
@@ -18,6 +19,7 @@ function DeckEditPage() {
   const [availableDomains, setAvailableDomains] = useState([]);
   const [pagination, setPagination] = useState({ current: 1, pages: 1 });
   const [selectedCard, setSelectedCard] = useState(null);
+  const { showToast } = useToast();
 
   // EL EDITOR SIEMPRE USA GRID
   const viewMode = "grid";
@@ -220,15 +222,16 @@ function DeckEditPage() {
     // 1. Check Global Limit (Shared between Main and Sideboard)
     if (card.type === "Legend") {
       if (currentGlobalCopies >= 1) {
-        alert("You can only have 1 copy of a Legend.");
+        showToast("You can only have 1 copy of a Legend.", "error");
         return;
       }
     } else if (card.type === "Rune") {
       // Runes have no copy limit (just the total deck limit of 12)
     } else {
       if (currentGlobalCopies >= 3) {
-        alert(
+        showToast(
           `You cannot have more than 3 copies of '${card.name}' in total (Main + Sideboard).`,
+          "error",
         );
         return;
       }
@@ -237,16 +240,16 @@ function DeckEditPage() {
     // 2. Section Specific Logic
     if (targetIsSideboard) {
       if (card.type === "Battlefield") {
-        alert("Battlefields cannot be added to the sideboard.");
+        showToast("Battlefields cannot be added to the sideboard.", "error");
         return;
       }
       if (card.type === "Legend") {
-        alert("Legends cannot be added to the sideboard.");
+        showToast("Legends cannot be added to the sideboard.", "error");
         return;
       }
       const sideboardCount = deck.filter((c) => c.is_sideboard).length;
       if (sideboardCount >= 8) {
-        alert("Sideboard is full (max 8 cards).");
+        showToast("Sideboard is full (max 8 cards).", "error");
         return;
       }
       await addCardToDeck(selectedDeck.id, card.id, true);
@@ -265,14 +268,17 @@ function DeckEditPage() {
         if (battlefields.length < 3) {
           await addCardToDeck(selectedDeck.id, card.id, false);
         } else {
-          alert("You can only have 3 Battlefields in your main deck.");
+          showToast(
+            "You can only have 3 Battlefields in your main deck.",
+            "error",
+          );
         }
       } else if (card.type === "Rune") {
         const runes = deck.filter((c) => c.type === "Rune" && !c.is_sideboard);
         if (runes.length < 12) {
           await addCardToDeck(selectedDeck.id, card.id, false);
         } else {
-          alert("You can only have 12 Runes in your main deck.");
+          showToast("You can only have 12 Runes in your main deck.", "error");
         }
       } else {
         const mainDeckCards = deck.filter(
@@ -285,7 +291,7 @@ function DeckEditPage() {
         if (mainDeckCards.length < 40) {
           await addCardToDeck(selectedDeck.id, card.id, false);
         } else {
-          alert("Main deck is full (max 40 cards).");
+          showToast("Main deck is full (max 40 cards).", "error");
         }
       }
     }

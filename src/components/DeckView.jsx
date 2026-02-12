@@ -1,11 +1,13 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import CardItem from "./CardItem";
 import "./Deck.css";
 import "./DeckView.css";
 
-const groupCards = (cards) => {
+const groupCards = (cards, sortMode = "name", sortOrder = "ASC") => {
   if (!cards) return [];
-  return cards.reduce((acc, card) => {
+
+  // First group by name to get quantities
+  const grouped = cards.reduce((acc, card) => {
     const existing = acc.find((c) => c.name === card.name);
     if (existing) {
       existing.quantity = (existing.quantity || 1) + 1;
@@ -14,10 +16,62 @@ const groupCards = (cards) => {
     }
     return acc;
   }, []);
+
+  // Then sort the grouped array
+  return [...grouped].sort((a, b) => {
+    let comparison = 0;
+    if (sortMode === "energy") {
+      const energyA = a.energy || 0;
+      const energyB = b.energy || 0;
+      comparison = energyA - energyB;
+    } else if (sortMode === "rarity") {
+      const rarityOrder = {
+        showcase: 0,
+        epic: 1,
+        rare: 2,
+        uncommon: 3,
+        common: 4,
+      };
+      const rarityA = rarityOrder[a.rarity?.toLowerCase()] ?? 5;
+      const rarityB = rarityOrder[b.rarity?.toLowerCase()] ?? 5;
+      comparison = rarityA - rarityB;
+    } else if (sortMode === "type") {
+      const typeOrder = {
+        Legend: 0,
+        Battlefield: 1,
+        Champion: 2,
+        Unit: 3,
+        Spell: 4,
+        Gear: 5,
+        Rune: 6,
+      };
+      const typeA = typeOrder[a.type] ?? 7;
+      const typeB = typeOrder[b.type] ?? 7;
+      comparison = typeA - typeB;
+    }
+
+    // If values are equal or we are in name mode, fallback to name
+    if (comparison === 0) {
+      comparison = a.name.localeCompare(b.name);
+    }
+
+    return sortOrder === "ASC" ? comparison : -comparison;
+  });
 };
 
-const ViewSection = ({ title, cards, limit, viewMode, setSelectedCard }) => {
-  const grouped = useMemo(() => groupCards(cards), [cards]);
+const ViewSection = ({
+  title,
+  cards,
+  limit,
+  viewMode,
+  sortMode,
+  sortOrder,
+  setSelectedCard,
+}) => {
+  const grouped = useMemo(
+    () => groupCards(cards, sortMode, sortOrder),
+    [cards, sortMode, sortOrder],
+  );
   const isGrid = viewMode === "grid";
 
   return (
@@ -65,51 +119,114 @@ const DeckView = ({
   setViewMode,
   validation,
 }) => {
-  const {
-    isValid,
-    legend,
-    battlefields,
-    mainDeck,
-    runes,
-    sideboard,
-    mainChampionId,
-    validChampions,
-  } = validation;
+  const [sortMode, setSortMode] = useState("name"); // 'name', 'energy', 'rarity', 'type'
+  const [sortOrder, setSortOrder] = useState("ASC"); // 'ASC', 'DESC'
 
-  const runesGrouped = useMemo(() => groupCards(runes), [runes]);
+  const { legend, battlefields, mainDeck, runes, sideboard, mainChampion } =
+    validation;
+
+  const runesGrouped = useMemo(
+    () => groupCards(runes, sortMode, sortOrder),
+    [runes, sortMode, sortOrder],
+  );
 
   return (
     <div className={`deck-container view-mode-active ${viewMode}-mode`}>
-      {/* Hero Public View */}
-      <div className="deck-hero-section">
-        <div className="deck-header-top">
-          <div className="deck-view-actions">
+      {/* Nuevo Header tipo Menú */}
+      <nav className="deck-view-navbar">
+        <div className="nav-center">
+          <div className="view-selector-pill">
             <button
-              className="toggle-edit-btn primary"
-              onClick={() => setIsEditingMode(true)}
+              className={`pill-btn ${viewMode === "grid" ? "active" : ""}`}
+              onClick={() => setViewMode("grid")}
             >
-              Edit This Deck
+              <span className="pill-icon">⠿</span> Grid
+            </button>
+            <button
+              className={`pill-btn ${viewMode === "list" ? "active" : ""}`}
+              onClick={() => setViewMode("list")}
+            >
+              <span className="pill-icon">☰</span> List
+            </button>
+          </div>
+
+          <div className="view-selector-pill sort-selector">
+            <button
+              className={`pill-btn ${sortMode === "name" ? "active" : ""}`}
+              onClick={() => setSortMode("name")}
+              title="Sort by Name"
+            >
+              A-Z
+            </button>
+            <button
+              className={`pill-btn ${sortMode === "energy" ? "active" : ""}`}
+              onClick={() => setSortMode("energy")}
+              title="Sort by Energy"
+            >
+              <span className="pill-icon">Energy</span>
+            </button>
+            <button
+              className={`pill-btn ${sortMode === "rarity" ? "active" : ""}`}
+              onClick={() => setSortMode("rarity")}
+              title="Sort by Rarity"
+            >
+              <span className="pill-icon">Rarity</span>
+            </button>
+            <button
+              className={`pill-btn ${sortMode === "type" ? "active" : ""}`}
+              onClick={() => setSortMode("type")}
+              title="Sort by Type"
+            >
+              <span className="pill-icon">Types</span>
+            </button>
+
+            <div className="sort-divider"></div>
+
+            <button
+              className="pill-btn order-toggle"
+              onClick={() =>
+                setSortOrder((prev) => (prev === "ASC" ? "DESC" : "ASC"))
+              }
+              title={sortOrder === "ASC" ? "Ascending" : "Descending"}
+            >
+              <span className="pill-icon">
+                {sortOrder === "ASC" ? "↑" : "↓"}
+              </span>
             </button>
           </div>
         </div>
-        <h1 className="deck-hero-title">{selectedDeck.name}</h1>
+
+        <div className="nav-right">
+          <button
+            className="nav-action-btn edit"
+            onClick={() => setIsEditingMode(true)}
+          >
+            <span className="btn-icon">✎</span> Edit Deck
+          </button>
+          <button className="nav-action-btn share">
+            <span className="btn-icon">🔗</span> Share
+          </button>
+        </div>
+      </nav>
+
+      {/* Hero Section con descripción y metadatos */}
+      <div className="deck-hero-minimal">
+        {selectedDeck.name && <h1>{selectedDeck.name}</h1>}
         {selectedDeck.description && (
-          <p className="deck-hero-description">{selectedDeck.description}</p>
+          <p className="deck-description-text">{selectedDeck.description}</p>
         )}
-        <div className="deck-hero-meta">
-          <div className="view-mode-toggle">
-            <button
-              className={`view-btn ${viewMode === "grid" ? "active" : ""}`}
-              onClick={() => setViewMode("grid")}
-            >
-              Grid
-            </button>
-            <button
-              className={`view-btn ${viewMode === "list" ? "active" : ""}`}
-              onClick={() => setViewMode("list")}
-            >
-              List
-            </button>
+        <div className="deck-stats-bar">
+          <div className="stat-item">
+            <span className="stat-label">Main</span>
+            <span className="stat-value">{mainDeck.length}/40</span>
+          </div>
+          <div className="stat-item">
+            <span className="stat-label">Runes</span>
+            <span className="stat-value">{runes.length}/12</span>
+          </div>
+          <div className="stat-item">
+            <span className="stat-label">Side</span>
+            <span className="stat-value">{sideboard?.length || 0}/8</span>
           </div>
         </div>
       </div>
@@ -125,18 +242,14 @@ const DeckView = ({
               onRightClick={setSelectedCard}
               viewMode="grid"
             />
-            {mainChampionId &&
-              validChampions
-                .filter((c) => c.id === mainChampionId)
-                .map((champ) => (
-                  <CardItem
-                    key={champ.id}
-                    card={champ}
-                    quantity={1}
-                    onRightClick={setSelectedCard}
-                    viewMode="grid"
-                  />
-                ))}
+            {mainChampion && (
+              <CardItem
+                card={mainChampion}
+                quantity={1}
+                onRightClick={setSelectedCard}
+                viewMode="grid"
+              />
+            )}
             {runesGrouped.map((card, index) => (
               <CardItem
                 key={`${card.id}-${index}`}
@@ -152,40 +265,35 @@ const DeckView = ({
 
       {/* Layout Sections */}
       <div className={`deck-layout ${viewMode}-display`}>
-        <div className="deck-main-sections">
-          <ViewSection
-            title="Battlefields"
-            cards={battlefields}
-            limit={3}
-            viewMode={viewMode}
-            setSelectedCard={setSelectedCard}
-          />
-          <ViewSection
-            title="Main Deck"
-            cards={mainDeck}
-            limit={40}
-            viewMode={viewMode}
-            setSelectedCard={setSelectedCard}
-          />
-          <ViewSection
-            title="Runes"
-            cards={runes}
-            limit={12}
-            viewMode={viewMode}
-            setSelectedCard={setSelectedCard}
-          />
-        </div>
+        <ViewSection
+          title="Battlefields"
+          cards={battlefields}
+          limit={3}
+          viewMode={viewMode}
+          sortMode={sortMode}
+          sortOrder={sortOrder}
+          setSelectedCard={setSelectedCard}
+        />
+        <ViewSection
+          title="Main Deck"
+          cards={mainDeck}
+          limit={40}
+          viewMode={viewMode}
+          sortMode={sortMode}
+          sortOrder={sortOrder}
+          setSelectedCard={setSelectedCard}
+        />
 
         {/* Sideboard Section */}
         {sideboard && sideboard.length > 0 && (
-          <div className="deck-sideboard-view-section">
-            <ViewSection
-              title="Sideboard"
-              cards={sideboard}
-              viewMode={viewMode}
-              setSelectedCard={setSelectedCard}
-            />
-          </div>
+          <ViewSection
+            title="Sideboard"
+            cards={sideboard}
+            viewMode={viewMode}
+            sortMode={sortMode}
+            sortOrder={sortOrder}
+            setSelectedCard={setSelectedCard}
+          />
         )}
       </div>
     </div>
