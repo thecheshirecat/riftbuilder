@@ -44,7 +44,6 @@
   overflow: hidden;
   background-image: url(../assets/backgrounds/hero.webp);
   background-size: cover;
-  background-position: center;
 }
 
 .hero-content:hover {
@@ -58,7 +57,7 @@
   position: relative;
   font-size: 3.5rem;
   margin-bottom: 1rem;
-  background: linear-gradient(to right, #fff, #3b82f6);
+  background: linear-gradient(90deg, #fff, #888);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   font-weight: 800;
@@ -119,117 +118,28 @@
   padding: 0 20px 60px;
 }
 
+/* Recent Decks Section */
 .saved-decks-section {
   width: 100%;
-}
-
-.btn-primary {
-  background: var(--primary);
-  color: white;
-  border: none;
-  padding: 12px 30px;
-  border-radius: 10px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: var(--transition);
-}
-
-.btn-primary:hover {
-  background: #60b5ff;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 15px var(--primary-glow);
-}
-
-.decks-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 25px;
-  margin-top: 30px;
-}
-
-.deck-card {
-  background: rgba(40, 40, 40, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 25px;
-  border-radius: 20px;
-  transition: var(--transition);
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  backdrop-filter: blur(8px);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-}
-
-.deck-card:hover {
-  background: rgba(50, 50, 50, 0.95);
-  transform: translateY(-5px);
-  border-color: var(--primary);
-  box-shadow:
-    0 12px 30px rgba(0, 0, 0, 0.6),
-    0 0 15px var(--primary-glow);
-}
-
-.deck-card h3 {
-  margin: 0 0 10px 0;
-  font-size: 1.4rem;
-}
-
-.deck-stats {
-  color: var(--text-dim);
-  font-size: 0.9rem;
-}
-
-.deck-card-glow {
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: radial-gradient(
-    circle at center,
-    var(--primary-glow) 0%,
-    transparent 70%
-  );
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  pointer-events: none;
-}
-
-.deck-card:hover .deck-card-glow {
-  opacity: 0.3;
-}
-
-.delete-deck-btn {
-  position: absolute;
-  top: 15px;
-  right: 15px;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  background: rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: var(--text-dim);
+  margin-top: 60px;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
+}
+
+.view-all-btn {
+  margin-top: 30px;
+  background: transparent;
+  color: #3b82f6;
+  border: 1px solid #3b82f6;
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-weight: 600;
   cursor: pointer;
-  font-size: 20px;
-  transition: var(--transition);
-  z-index: 10;
+  transition: all 0.2s ease;
 }
 
-.delete-deck-btn:hover {
-  background: var(--danger);
-  color: white;
-  border-color: var(--danger);
-  transform: scale(1.1);
-}
-
-.empty-state {
-  text-align: center;
-  padding: 60px;
-  color: var(--text-dim);
-  background: rgba(255, 255, 255, 0.01);
-  border-radius: 20px;
-  border: 1px dashed var(--border-color);
+.view-all-btn:hover {
+  background: rgba(59, 130, 246, 0.1);
+  transform: translateY(-2px);
 }

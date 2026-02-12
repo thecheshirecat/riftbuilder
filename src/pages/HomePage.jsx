@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import HeroCards from "../components/HeroCards";
+import LatestDecks from "../components/LatestDecks";
 import * as api from "../services/riftbound-api";
 import { useToast } from "../components/Toast";
 import "./HomePage.css";
@@ -15,7 +16,7 @@ function HomePage() {
   useEffect(() => {
     const fetchDecks = async () => {
       try {
-        const data = await api.fetchDecks(user?.id);
+        const data = await api.fetchDecks(); // Sin userId para traer los globales
         setDecks(data);
       } catch (err) {
         console.error("Error fetching decks:", err);
@@ -24,7 +25,7 @@ function HomePage() {
       }
     };
     fetchDecks();
-  }, [user?.id]);
+  }, []);
 
   const handleQuickCreate = async () => {
     if (!user) {
@@ -71,37 +72,29 @@ function HomePage() {
             <p className="hero-subtitle">
               Click here to start building your next masterpiece
             </p>
-            <div className="hero-cta">
-              <span>Create New Deck</span>
-            </div>
           </div>
         </header>
 
         <div className="landing-content">
           <section className="saved-decks-section">
             <div className="section-header">
-              <h2>Latest Decks</h2>
+              <h2>Recent Decks</h2>
+              <div className="header-line"></div>
             </div>
-            {isLoading ? (
-              <div className="loading">Summoning your decks...</div>
-            ) : decks.length > 0 ? (
-              <div className="decks-grid">
-                {decks.map((deck) => (
-                  <div
-                    key={deck.id}
-                    className="deck-card"
-                    onClick={() => handleSelectDeck(deck.id)}
-                  >
-                    <div className="deck-card-glow"></div>
-                    <h3>{deck.name}</h3>
-                    <div className="deck-stats">{deck.description}</div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="empty-state">
-                <p>No decks found. Time to forge your first one!</p>
-              </div>
+
+            <LatestDecks
+              decks={decks.slice(0, 10)}
+              isLoading={isLoading}
+              onSelectDeck={handleSelectDeck}
+            />
+
+            {decks.length > 10 && (
+              <button
+                className="view-all-btn"
+                onClick={() => navigate("/my-decks")}
+              >
+                View All Decks
+              </button>
             )}
           </section>
         </div>

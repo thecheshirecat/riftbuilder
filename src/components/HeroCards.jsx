@@ -36,11 +36,11 @@ const HeroCards = () => {
       <div className="hero-cards-perspective">
         {cardImages.map((src, index) => (
           <div key={index} className={`hero-card card-${index + 1}`}>
-            <div className="card-inner">
+            <div className="hero-card-inner">
               <img src={src} alt={`Rift Card ${index + 1}`} />
-              <div className="card-shine"></div>
+              <div className="hero-card-shine"></div>
             </div>
-            <div className="card-shadow"></div>
+            <div className="hero-card-shadow"></div>
           </div>
         ))}
       </div>

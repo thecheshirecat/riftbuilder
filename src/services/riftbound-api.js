@@ -119,6 +119,15 @@ export const removeCardFromDeck = async (deckId, cardId, isSideboard = false) =>
   }
 };
 
+export const fetchCard = async (cardId) => {
+  try {
+    return await handleResponse(await fetch(`${API_URL}/cards/${cardId}`));
+  } catch (error) {
+    console.error(`Error fetching card ${cardId}:`, error);
+    return null;
+  }
+};
+
 export const register = async (username, password) => {
   return await handleResponse(await fetch(`${API_URL}/auth/register`, {
     method: "POST",

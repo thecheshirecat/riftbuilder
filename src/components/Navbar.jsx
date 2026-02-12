@@ -50,11 +50,7 @@ function Navbar() {
         </Link>
 
         <div className={`navbar-links ${isMenuOpen ? "active" : ""}`}>
-          <Link
-            to="/"
-            className="nav-item"
-            onClick={() => setIsMenuOpen(false)}
-          >
+          <Link to="/my-decks" className="nav-item" onClick={() => setIsMenuOpen(false)}>
             My Decks
           </Link>
           <button className="nav-item btn-link" onClick={handleCreateDeck}>

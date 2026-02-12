@@ -236,10 +236,18 @@ router.get("/cards/random", (req, res) => {
 router.get("/decks", async (req, res) => {
   const { userId } = req.query;
   try {
-    let sql = "SELECT * FROM decks";
+    let sql = `
+      SELECT d.*, 
+        (SELECT c.image_url 
+         FROM cards c 
+         JOIN deck_cards dc ON c.id = dc.card_id 
+         WHERE dc.deck_id = d.id AND c.type = 'Legend' 
+         LIMIT 1) as legend_image
+      FROM decks d
+    `;
     const params = [];
     if (userId) {
-      sql += " WHERE user_id = ?";
+      sql += " WHERE d.user_id = ?";
       params.push(userId);
     }
     const rows = await allQuery(sql, params);
@@ -266,9 +274,17 @@ router.post("/decks", async (req, res) => {
 // Get specific deck with cards
 router.get("/decks/:deckId", async (req, res) => {
   try {
-    const deck = await getQuery("SELECT * FROM decks WHERE id = ?", [
-      req.params.deckId,
-    ]);
+    const deckSql = `
+      SELECT d.*, 
+        (SELECT c.image_url 
+         FROM cards c 
+         JOIN deck_cards dc ON c.id = dc.card_id 
+         WHERE dc.deck_id = d.id AND c.type = 'Legend' 
+         LIMIT 1) as legend_image
+      FROM decks d 
+      WHERE d.id = ?
+    `;
+    const deck = await getQuery(deckSql, [req.params.deckId]);
     if (!deck) return res.status(404).json({ error: "Deck not found" });
 
     const cardsSql = `SELECT c.*, dc.is_sideboard FROM cards c

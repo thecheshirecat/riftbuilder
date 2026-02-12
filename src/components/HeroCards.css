@@ -28,24 +28,21 @@
   pointer-events: auto; /* Permitir interacción */
 }
 
-.card-inner {
+.hero-card-inner {
   position: relative;
   width: 100%;
   height: 100%;
-  border-radius: 18px;
   overflow: hidden;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.1);
   transform-style: preserve-3d;
 }
 
-.card-inner img {
+.hero-card-inner img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
 }
 
-.card-shine {
+.hero-card-shine {
   position: absolute;
   top: 0;
   left: 0;
@@ -64,7 +61,7 @@
   pointer-events: none;
 }
 
-.card-shadow {
+.hero-card-shadow {
   position: absolute;
   bottom: -20px;
   left: 5%;
@@ -107,18 +104,15 @@
   z-index: 10;
 }
 
-.hero-card:hover .card-inner {
-  box-shadow:
-    0 30px 60px rgba(0, 0, 0, 0.8),
-    0 0 20px rgba(0, 212, 255, 0.3);
-  border-color: rgba(0, 212, 255, 0.5);
+.hero-card:hover .hero-card-inner {
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8);
 }
 
-.hero-card:hover .card-shine {
+.hero-card:hover .hero-card-shine {
   background-position: 100% 100%;
 }
 
-.hero-card:hover .card-shadow {
+.hero-card:hover .hero-card-shadow {
   transform: scale(1.2);
   opacity: 0.6;
   bottom: -40px;
