@@ -2,18 +2,20 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import HeroCards from "../components/HeroCards";
 import * as api from "../services/riftbound-api";
+import { useToast } from "../components/Toast";
 import "./HomePage.css";
 
 function HomePage() {
   const [decks, setDecks] = useState([]);
-  const [newDeckName, setNewDeckName] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
+  const { showToast } = useToast();
+  const user = JSON.parse(localStorage.getItem("riftbound_user"));
 
   useEffect(() => {
     const fetchDecks = async () => {
       try {
-        const data = await api.fetchDecks();
+        const data = await api.fetchDecks(user?.id);
         setDecks(data);
       } catch (err) {
         console.error("Error fetching decks:", err);
@@ -22,19 +24,24 @@ function HomePage() {
       }
     };
     fetchDecks();
-  }, []);
+  }, [user?.id]);
 
-  const handleCreateDeck = async (e) => {
-    e.preventDefault();
-    if (!newDeckName.trim()) return;
+  const handleQuickCreate = async () => {
+    if (!user) {
+      showToast("Please login to create a deck", "info");
+      navigate("/login");
+      return;
+    }
 
     try {
-      const data = await api.createDeck(newDeckName);
+      const defaultName = `New Deck ${new Date().toLocaleDateString()}`;
+      const data = await api.createDeck(defaultName, user.id);
       if (data && data.id) {
         navigate(`/edit/${data.id}`);
       }
     } catch (err) {
       console.error("Error creating deck:", err);
+      showToast("Failed to create deck", "error");
     }
   };
 
@@ -59,28 +66,22 @@ function HomePage() {
         }}
       >
         <header className="landing-header">
-          <h1>Riftbound Deck Builder</h1>
-          <p>Strategize. Build. Conquer.</p>
+          <div className="hero-content" onClick={handleQuickCreate}>
+            <h1>Forge Your Deck</h1>
+            <p className="hero-subtitle">
+              Click here to start building your next masterpiece
+            </p>
+            <div className="hero-cta">
+              <span>Create New Deck</span>
+            </div>
+          </div>
         </header>
 
         <div className="landing-content">
-          <section className="create-deck-section">
-            <h2>Start a New Masterpiece</h2>
-            <form className="create-deck-form" onSubmit={handleCreateDeck}>
-              <input
-                type="text"
-                placeholder="Deck Name (e.g. 'Fury & Chaos Aggro')"
-                value={newDeckName}
-                onChange={(e) => setNewDeckName(e.target.value)}
-              />
-              <button type="submit" className="btn-primary">
-                Create Deck
-              </button>
-            </form>
-          </section>
-
           <section className="saved-decks-section">
-            <h2>Your Saved Decks</h2>
+            <div className="section-header">
+              <h2>Latest Decks</h2>
+            </div>
             {isLoading ? (
               <div className="loading">Summoning your decks...</div>
             ) : decks.length > 0 ? (
@@ -93,9 +94,7 @@ function HomePage() {
                   >
                     <div className="deck-card-glow"></div>
                     <h3>{deck.name}</h3>
-                    <div className="deck-stats">
-                      Click to load this deck and strategize.
-                    </div>
+                    <div className="deck-stats">{deck.description}</div>
                   </div>
                 ))}
               </div>

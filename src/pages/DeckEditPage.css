@@ -2,7 +2,6 @@
   display: grid;
   grid-template-columns: 2fr 1fr;
   gap: 30px;
-  height: 100%;
   align-items: start;
   transition: all 0.3s ease;
 }
@@ -15,22 +14,18 @@
   background: #1e1e1e;
   border-radius: 12px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-  overflow: hidden;
-  height: 100%;
+  border: 1px solid #333;
   display: flex;
   flex-direction: column;
-  border: 1px solid #333;
 }
 
 .deck-section {
   background: #1e1e1e;
   border-radius: 12px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-  height: 100%;
-  overflow-y: auto;
+  border: 1px solid #333;
   display: flex;
   flex-direction: column;
-  border: 1px solid #333;
 }
 
 /* Custom Scrollbar for Deck Section */

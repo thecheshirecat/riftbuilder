@@ -1,6 +1,53 @@
 const express = require("express");
 const router = express.Router();
 const { allQuery, getQuery, runQuery, db } = require("../database");
+const bcrypt = require("bcryptjs");
+
+// --- AUTH ROUTES ---
+
+// Register user
+router.post("/auth/register", async (req, res) => {
+  const { username, password } = req.body;
+  if (!username || !password) {
+    return res.status(400).json({ error: "Username and password required" });
+  }
+
+  try {
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const result = await runQuery(
+      "INSERT INTO users (username, password) VALUES (?, ?)",
+      [username, hashedPassword],
+    );
+    res.json({ id: result.lastID, username });
+  } catch (err) {
+    if (err.message.includes("UNIQUE constraint failed")) {
+      return res.status(400).json({ error: "Username already exists" });
+    }
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Login user
+router.post("/auth/login", async (req, res) => {
+  const { username, password } = req.body;
+  try {
+    const user = await getQuery("SELECT * FROM users WHERE username = ?", [
+      username,
+    ]);
+    if (!user) {
+      return res.status(400).json({ error: "Invalid username or password" });
+    }
+
+    const validPassword = await bcrypt.compare(password, user.password);
+    if (!validPassword) {
+      return res.status(400).json({ error: "Invalid username or password" });
+    }
+
+    res.json({ id: user.id, username: user.username });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
 // --- CARD ROUTES ---
 
@@ -187,8 +234,15 @@ router.get("/cards/random", (req, res) => {
 
 // Get all decks
 router.get("/decks", async (req, res) => {
+  const { userId } = req.query;
   try {
-    const rows = await allQuery("SELECT * FROM decks");
+    let sql = "SELECT * FROM decks";
+    const params = [];
+    if (userId) {
+      sql += " WHERE user_id = ?";
+      params.push(userId);
+    }
+    const rows = await allQuery(sql, params);
     res.json(rows);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -197,10 +251,12 @@ router.get("/decks", async (req, res) => {
 
 // Create a new deck
 router.post("/decks", async (req, res) => {
+  const { name, userId } = req.body;
   try {
-    const result = await runQuery("INSERT INTO decks (name) VALUES (?)", [
-      req.body.name,
-    ]);
+    const result = await runQuery(
+      "INSERT INTO decks (name, user_id) VALUES (?, ?)",
+      [name, userId || null],
+    );
     res.json({ id: result.lastID });
   } catch (err) {
     res.status(500).json({ error: err.message });

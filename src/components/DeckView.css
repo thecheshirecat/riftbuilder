@@ -1,7 +1,7 @@
 /* New Navbar Header */
 .deck-view-navbar {
   position: sticky;
-  top: 0;
+  top: 70px;
   z-index: 100;
   background: rgba(13, 14, 18, 0.9);
   backdrop-filter: blur(10px);

@@ -88,7 +88,9 @@ const initSchema = () => {
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT NOT NULL,
             description TEXT,
-            main_champion_id TEXT
+            main_champion_id TEXT,
+            user_id INTEGER,
+            FOREIGN KEY (user_id) REFERENCES users (id)
         )`,
       (err) => {
         if (err) {
@@ -102,6 +104,10 @@ const initSchema = () => {
           const hasDescription = columns.some((c) => c.name === "description");
           if (!hasDescription) {
             db.run("ALTER TABLE decks ADD COLUMN description TEXT");
+          }
+          const hasUserId = columns.some((c) => c.name === "user_id");
+          if (!hasUserId) {
+            db.run("ALTER TABLE decks ADD COLUMN user_id INTEGER");
           }
         });
       },
@@ -146,6 +152,21 @@ const initSchema = () => {
           return console.error("Error creating domains table :" + err.message);
         }
         console.log("Domains table initialized.");
+      },
+    );
+
+    db.run(
+      `CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT UNIQUE NOT NULL,
+            password TEXT NOT NULL,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )`,
+      (err) => {
+        if (err) {
+          return console.error("Error creating users table: " + err.message);
+        }
+        console.log("Users table initialized.");
       },
     );
   });

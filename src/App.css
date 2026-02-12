@@ -1,11 +1,10 @@
 .App {
   text-align: center;
-  height: 100dvh; /* Use dynamic viewport height */
+  min-height: 100vh;
   background-color: #121212; /* Dark background */
   color: #e0e0e0; /* Light text */
   display: flex;
   flex-direction: column;
-  overflow: hidden; /* Prevent body scroll */
 }
 
 .App-header {
@@ -60,7 +59,6 @@
   margin: 0 auto;
   width: 100%;
   box-sizing: border-box;
-  overflow: hidden; /* Main container allows grid scroll */
 }
 
 /* Responsive design */

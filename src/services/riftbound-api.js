@@ -39,9 +39,10 @@ export const fetchDomains = async () => {
   }
 };
 
-export const fetchDecks = async () => {
+export const fetchDecks = async (userId = null) => {
   try {
-    return await handleResponse(await fetch(`${API_URL}/decks`));
+    const url = userId ? `${API_URL}/decks?userId=${userId}` : `${API_URL}/decks`;
+    return await handleResponse(await fetch(url));
   } catch (error) {
     console.error("Error fetching decks:", error);
     return [];
@@ -57,12 +58,12 @@ export const fetchDeck = async (deckId) => {
   }
 };
 
-export const createDeck = async (name) => {
+export const createDeck = async (name, userId = null) => {
   try {
     return await handleResponse(await fetch(`${API_URL}/decks`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name }),
+      body: JSON.stringify({ name, userId }),
     }));
   } catch (error) {
     console.error("Error creating deck:", error);
@@ -116,4 +117,20 @@ export const removeCardFromDeck = async (deckId, cardId, isSideboard = false) =>
     console.error("Error removing card from deck:", error);
     return null;
   }
+};
+
+export const register = async (username, password) => {
+  return await handleResponse(await fetch(`${API_URL}/auth/register`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ username, password }),
+  }));
+};
+
+export const login = async (username, password) => {
+  return await handleResponse(await fetch(`${API_URL}/auth/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ username, password }),
+  }));
 };
