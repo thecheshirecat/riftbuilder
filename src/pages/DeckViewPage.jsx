@@ -59,7 +59,7 @@ function DeckViewPage() {
 
   return (
     <div className="App">
-      <main className="App-main">
+      <main className="App-main deck-view-container">
         <div className="content-grid full-deck">
           <section className="deck-section">
             {/* 

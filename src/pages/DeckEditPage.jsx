@@ -402,7 +402,7 @@ function DeckEditPage() {
 
   return (
     <div className="App">
-      <main className="App-main">
+      <main className="deck-edit-main">
         <div className="content-grid">
           {/* Sección Izquierda: Catálogo de Cartas y Filtros */}
           <section className="card-list-section">

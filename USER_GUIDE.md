@@ -19,12 +19,13 @@ The **Home Page** showcases the latest decks created by the community. You can c
 
 ## 2. Managing Your Collection
 
-### My Decks
+### Managing Your Collection
 
 Once logged in, the **"My Decks"** section is your personal hub. Here you can:
 
 - View all the decks you've created.
 - See a quick summary of each deck.
+- **Privacy Controls**: Manage who can see your decks.
 - Access the **Deck Forge** to create a brand-new deck from scratch.
 
 ### Creating a Deck
@@ -36,6 +37,16 @@ Click the **"Create Deck"** button in the navigation bar, the header from the **
 ## 3. Using the Deck Editor (The Forge)
 
 The editor is divided into two main sections: the **Card Catalog** (left) and the **Deck Manager** (right).
+
+### Deck Settings & Visibility
+
+When editing your deck, you can set its **Visibility** to control its exposure:
+
+- **Public**: Visible to everyone and featured in the "Latest Decks" section on the Home Page.
+- **Unlisted**: Accessible to anyone with the link, but hidden from public lists and searches.
+- **Private**: Only you can see and access this deck when logged in.
+
+You can also update the deck's **Name** and **Description** directly from the settings panel.
 
 ### Building Logic
 
@@ -71,11 +82,13 @@ When viewing a deck (your own or someone else's):
 - **Visual Modes**: Toggle between **Grid View** (to see card art) and **List View** (for a compact summary).
 - **Sorting**: Sort cards by Name, Energy cost, Rarity, or Type.
 - **Details**: Right-Click on any card to see its full stats, tags, and abilities. Left click for list view.
+- **Visual Effects**: Enjoy a modern interface with smooth transitions, image scaling, and soft gradients.
 
-### Permissions
+### Permissions & Access
 
 - **Edit**: You can only edit decks that you have created. If you are viewing someone else's deck, the "Edit" button will be hidden.
-- **Share**: Use the "Share" button to copy the URL and show your creation to others.
+- **Privacy Enforcement**: Private decks are strictly accessible only to their owners.
+- **Share**: Use the "Share" button to copy the URL and show your creation to others. Unlisted decks are perfect for sharing with friends without making them public.
 
 ---
 
