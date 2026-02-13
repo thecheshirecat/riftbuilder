@@ -25,7 +25,7 @@
   width: 280px;
   height: 390px;
   transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
-  pointer-events: auto; /* Permitir interacción */
+  pointer-events: none; /* Desactivar interacción */
 }
 
 .hero-card-inner {
@@ -96,46 +96,6 @@
   z-index: 1;
 }
 
-/* Interacción Hover */
-
-.hero-card:hover {
-  transform: translate3d(var(--hover-x, 0), var(--hover-y, -40px), 100px)
-    rotateY(0deg) rotateX(0deg) scale(1.1);
-  z-index: 10;
-}
-
-.hero-card:hover .hero-card-inner {
-  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8);
-}
-
-.hero-card:hover .hero-card-shine {
-  background-position: 100% 100%;
-}
-
-.hero-card:hover .hero-card-shadow {
-  transform: scale(1.2);
-  opacity: 0.6;
-  bottom: -40px;
-}
-
-/* Específicos para el hover según posición */
-.card-1:hover {
-  --hover-x: -350px;
-  --hover-y: -80px;
-}
-.card-2:hover {
-  --hover-x: -150px;
-  --hover-y: 20px;
-}
-.card-3:hover {
-  --hover-x: 150px;
-  --hover-y: -60px;
-}
-.card-4:hover {
-  --hover-x: 380px;
-  --hover-y: 10px;
-}
-
 @media (max-width: 1000px) {
   .hero-card {
     width: 200px;
@@ -152,18 +112,5 @@
   }
   .card-4 {
     transform: translate3d(200px, 20px, -150px) rotateY(-20deg);
-  }
-
-  .card-1:hover {
-    --hover-x: -200px;
-  }
-  .card-2:hover {
-    --hover-x: -80px;
-  }
-  .card-3:hover {
-    --hover-x: 80px;
-  }
-  .card-4:hover {
-    --hover-x: 200px;
   }
 }

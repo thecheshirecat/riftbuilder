@@ -45,9 +45,11 @@ export const fetchDomains = async () => {
   }
 };
 
-export const fetchLatestDecks = async () => {
+export const fetchLatestDecks = async (limit = 6) => {
   try {
-    return await handleResponse(await fetch(`${API_URL}/latest-decks`));
+    return await handleResponse(
+      await fetch(`${API_URL}/latest-decks?limit=${limit}`),
+    );
   } catch (error) {
     console.error("Error fetching latest decks:", error);
     return [];
@@ -74,7 +76,7 @@ export const fetchDeck = async (deckId, userId = null) => {
     return await handleResponse(await fetch(url));
   } catch (error) {
     console.error("Error fetching deck:", error);
-    return null;
+    throw error; // Re-lanzar para que useDeck pueda capturar el mensaje
   }
 };
 

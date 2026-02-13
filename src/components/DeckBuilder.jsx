@@ -93,7 +93,12 @@ const DeckBuilder = ({
         updateDeckMetadata(selectedDeck.id, { is_valid: validation.isValid });
       }
     }
-  }, [validation.isValid, selectedDeck.id, selectedDeck.is_valid, updateDeckMetadata]);
+  }, [
+    validation.isValid,
+    selectedDeck.id,
+    selectedDeck.is_valid,
+    updateDeckMetadata,
+  ]);
 
   const handleSaveMetadata = () => {
     updateDeckMetadata(selectedDeck.id, {
@@ -146,18 +151,6 @@ const DeckBuilder = ({
               title="Import deck from clipboard list"
             >
               📥 Import
-            </button>
-            <button
-              className="toggle-edit-btn active"
-              onClick={() => setIsEditingMode(false)}
-            >
-              Stop Editing
-            </button>
-            <button
-              className="delete-deck-btn-builder"
-              onClick={() => onDeleteDeck(selectedDeck.id)}
-            >
-              Delete
             </button>
           </div>
         </div>
@@ -219,27 +212,44 @@ const DeckBuilder = ({
               </div>
             </div>
           ) : (
-            <div
-              className="deck-title-area clickable"
-              onClick={() => setIsEditingMetadata(true)}
-              title="Click to edit deck name and description"
-            >
-              <div className="deck-title-wrapper">
-                <h2 className="deck-title">{selectedDeck.name}</h2>
-                <span className="edit-icon-hint">✎</span>
-                <span
-                  className={`visibility-badge-inline ${selectedDeck.visibility || "public"}`}
-                >
-                  {selectedDeck.visibility === "private"
-                    ? "🔒 Private"
-                    : selectedDeck.visibility === "unlisted"
-                      ? "🔗 Unlisted"
-                      : "🌍 Public"}
-                </span>
+            <div className="deck-title-area-container">
+              <div
+                className="deck-title-area clickable"
+                onClick={() => setIsEditingMetadata(true)}
+                title="Click to edit deck name and description"
+              >
+                <div className="deck-title-wrapper">
+                  <h2 className="deck-title">{selectedDeck.name}</h2>
+                  <span className="edit-icon-hint">✎</span>
+                  <span
+                    className={`visibility-badge-inline ${selectedDeck.visibility || "public"}`}
+                  >
+                    {selectedDeck.visibility === "private"
+                      ? "🔒 Private"
+                      : selectedDeck.visibility === "unlisted"
+                        ? "🔗 Unlisted"
+                        : "🌍 Public"}
+                  </span>
+                </div>
+                {selectedDeck.description && (
+                  <p className="deck-description">{selectedDeck.description}</p>
+                )}
               </div>
-              {selectedDeck.description && (
-                <p className="deck-description">{selectedDeck.description}</p>
-              )}
+
+              <div className="deck-management-buttons">
+                <button
+                  className="toggle-edit-btn active"
+                  onClick={() => setIsEditingMode(false)}
+                >
+                  Finish Editing
+                </button>
+                <button
+                  className="delete-deck-btn-builder"
+                  onClick={() => onDeleteDeck(selectedDeck.id)}
+                >
+                  Delete Deck
+                </button>
+              </div>
             </div>
           )}
         </div>

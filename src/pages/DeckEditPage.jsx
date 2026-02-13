@@ -440,13 +440,20 @@ function DeckEditPage() {
           (c) => c.name.toLowerCase() === cleanName.toLowerCase(),
         );
 
-        // Si no hay coincidencia exacta, probar a buscar la parte antes de la primera coma
-        // Útil para "Teemo, Swift Scout" si en la DB está como "Teemo, Scout"
-        if (!card && cleanName.includes(",")) {
-          const firstPart = cleanName.split(",")[0].trim();
+        // Si no hay coincidencia exacta, probar a buscar coincidencias parciales inteligentes
+        if (!card) {
+          // 1. Probar si el nombre buscado es parte de un nombre más largo (ej: "Dark Child" -> "Dark Child - Starter")
           card = searchResult.cards.find((c) =>
-            c.name.toLowerCase().startsWith(firstPart.toLowerCase()),
+            c.name.toLowerCase().includes(cleanName.toLowerCase()),
           );
+
+          // 2. Si sigue sin haber, y tiene coma, probar la parte antes de la primera coma
+          if (!card && cleanName.includes(",")) {
+            const firstPart = cleanName.split(",")[0].trim();
+            card = searchResult.cards.find((c) =>
+              c.name.toLowerCase().startsWith(firstPart.toLowerCase()),
+            );
+          }
         }
 
         if (card) {

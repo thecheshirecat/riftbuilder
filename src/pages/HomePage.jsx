@@ -16,7 +16,7 @@ function HomePage() {
   useEffect(() => {
     const fetchDecks = async () => {
       try {
-        const data = await api.fetchLatestDecks(); // Usar el endpoint de últimos mazos públicos
+        const data = await api.fetchLatestDecks(7); // Pedimos 7 para saber si hay más de 6
         setDecks(data);
       } catch (err) {
         console.error("Error fetching decks:", err);
@@ -78,20 +78,12 @@ function HomePage() {
         <div className="landing-content">
           <section className="saved-decks-section">
             <LatestDecks
-              decks={decks.slice(0, 10)}
+              decks={decks.slice(0, 6)}
               isLoading={isLoading}
               onSelectDeck={handleSelectDeck}
               title="Latest Decks"
+              showSeeMore={decks.length > 6}
             />
-
-            {decks.length > 10 && (
-              <button
-                className="view-all-btn"
-                onClick={() => navigate("/my-decks")}
-              >
-                View All Decks
-              </button>
-            )}
           </section>
         </div>
       </div>

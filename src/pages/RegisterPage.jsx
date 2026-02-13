@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import * as api from "../services/riftbound-api";
 import { useToast } from "../components/Toast";
+import HeroCards from "../components/HeroCards";
 import "./RegisterPage.css";
 
 function RegisterPage() {
@@ -15,6 +16,24 @@ function RegisterPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Frontend Validations
+    const trimmedUsername = username.trim();
+    if (trimmedUsername.length < 3 || trimmedUsername.length > 20) {
+      showToast("Username must be between 3 and 20 characters", "error");
+      return;
+    }
+
+    const usernameRegex = /^[a-zA-Z0-9_]+$/;
+    if (!usernameRegex.test(trimmedUsername)) {
+      showToast("Username can only contain letters, numbers, and underscores", "error");
+      return;
+    }
+
+    if (password.length < 6) {
+      showToast("Password must be at least 6 characters long", "error");
+      return;
+    }
+
     if (password !== confirmPassword) {
       showToast("Passwords do not match", "error");
       return;
@@ -22,7 +41,7 @@ function RegisterPage() {
 
     setIsLoading(true);
     try {
-      await api.register(username, password);
+      await api.register(trimmedUsername, password);
       showToast("Account created successfully! Please login.", "success");
       navigate("/");
     } catch (err) {
@@ -33,8 +52,9 @@ function RegisterPage() {
   };
 
   return (
-    <div className="auth-page">
-      <div className="auth-card">
+    <div className="auth-page" style={{ position: "relative", overflow: "hidden" }}>
+      <HeroCards />
+      <div className="auth-card" style={{ position: "relative", zIndex: 2 }}>
         <h2>Join the Rift</h2>
         <p className="auth-subtitle">Create your account to start building decks</p>
         

@@ -9,6 +9,8 @@ Welcome to the **Riftbound Deck Builder**, a new tool for forging your decks. Th
 ### Access & Identity
 
 - **Registration & Login**: Create an account to save your collection. Your username will be displayed as the author of your public decks (e.g., `@username`).
+  - **Username Requirements**: Must be 3-20 characters long and contain only letters, numbers, or underscores.
+  - **Password Security**: Minimum of 6 characters required.
 - **Exploring**: The **Home Page** showcases the latest **Valid Decks** created by the community. Click any card to view its full composition.
 
 ---

@@ -21,17 +21,29 @@ function DeckViewPage() {
     updateDeckMetadata,
     deleteDeck,
     setMainChampionId,
+    error,
+    isLoading,
   } = useDeck(parseInt(deckId));
 
   // -- Efectos --
   /**
    * Asegura que el mazo correcto esté cargado cuando cambia el ID en la URL
+   * Si hay un error de acceso, redirige a la home.
    */
   useEffect(() => {
     if (deckId) {
       setSelectedDeckById(parseInt(deckId));
     }
   }, [deckId, setSelectedDeckById]);
+
+  useEffect(() => {
+    if (error === "This deck is private.") {
+      const timer = setTimeout(() => {
+        navigate("/");
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [error, navigate]);
 
   // -- Handlers --
   /**
@@ -55,7 +67,45 @@ function DeckViewPage() {
   const isOwner = selectedDeck && user && selectedDeck.user_id === user.id;
 
   // -- Renderizado Condicional --
-  if (!selectedDeck) return <div className="loading">Loading deck...</div>;
+  if (isLoading)
+    return (
+      <div className="App">
+        <div className="loading">Loading deck...</div>
+      </div>
+    );
+
+  if (error === "This deck is private.") {
+    return (
+      <div className="App">
+        <div className="error-container">
+          <div className="error-message">
+            <h2>Access Denied</h2>
+            <p>This deck is private and can only be viewed by its owner.</p>
+            <p className="redirect-hint">Redirecting to home in 5 seconds...</p>
+            <button className="home-btn" onClick={() => navigate("/")}>
+              Go Home Now
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !selectedDeck) {
+    return (
+      <div className="App">
+        <div className="error-container">
+          <div className="error-message">
+            <h2>Deck Not Found</h2>
+            <p>{error || "We couldn't find the deck you're looking for."}</p>
+            <button className="home-btn" onClick={() => navigate("/")}>
+              Go Home
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="App">

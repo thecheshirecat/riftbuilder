@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import * as api from "../services/riftbound-api";
 import { useToast } from "../components/Toast";
+import HeroCards from "../components/HeroCards";
 import "./RegisterPage.css"; // Reusing the same styles for consistency
 
 function LoginPage() {
@@ -31,8 +32,9 @@ function LoginPage() {
   };
 
   return (
-    <div className="auth-page">
-      <div className="auth-card">
+    <div className="auth-page" style={{ position: "relative", overflow: "hidden" }}>
+      <HeroCards />
+      <div className="auth-card" style={{ position: "relative", zIndex: 2 }}>
         <h2>Welcome Back</h2>
         <p className="auth-subtitle">
           Log in to your Riftbuilder account to create and share your decks

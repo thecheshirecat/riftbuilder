@@ -7,9 +7,28 @@ const bcrypt = require("bcryptjs");
 
 // Register user
 router.post("/auth/register", async (req, res) => {
-  const { username, password } = req.body;
+  let { username, password } = req.body;
+
+  // 1. Basic check
   if (!username || !password) {
     return res.status(400).json({ error: "Username and password required" });
+  }
+
+  // 2. Sanitize and validate username
+  username = username.trim();
+  const usernameRegex = /^[a-zA-Z0-9_]{3,20}$/;
+  if (!usernameRegex.test(username)) {
+    return res.status(400).json({
+      error:
+        "Username must be 3-20 characters long and contain only letters, numbers, and underscores",
+    });
+  }
+
+  // 3. Validate password strength
+  if (password.length < 6) {
+    return res
+      .status(400)
+      .json({ error: "Password must be at least 6 characters long" });
   }
 
   try {
@@ -264,6 +283,7 @@ router.get("/decks", async (req, res) => {
 
 // Get latest decks
 router.get("/latest-decks", async (req, res) => {
+  const limit = req.query.limit ? parseInt(req.query.limit) : 6;
   try {
     const sql = `
       SELECT d.*, u.username,
@@ -277,9 +297,9 @@ router.get("/latest-decks", async (req, res) => {
       WHERE (d.visibility = 'public' OR d.visibility IS NULL OR d.visibility = '')
       AND d.is_valid = 1
       ORDER BY d.id DESC 
-      LIMIT 10
+      LIMIT ?
     `;
-    const decks = await allQuery(sql);
+    const decks = await allQuery(sql, [limit]);
     res.json(decks);
   } catch (err) {
     res.status(500).json({ error: err.message });

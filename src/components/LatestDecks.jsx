@@ -1,12 +1,21 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import "./LatestDecks.css";
 
-const LatestDecks = ({ decks, isLoading, onSelectDeck, title }) => {
+const LatestDecks = ({
+  decks,
+  isLoading,
+  onSelectDeck,
+  title,
+  showSeeMore,
+}) => {
   // -- Estados de Carga y Vacío --
   if (isLoading) {
     return (
       <div className="latest-decks-section">
-        {title && <h2 className="section-title">{title}</h2>}
+        <div className="section-header">
+          {title && <h2 className="section-title">{title}</h2>}
+        </div>
         <div className="latest-decks-loading">
           <div className="spinner"></div>
           <p>Summoning decks...</p>
@@ -18,7 +27,9 @@ const LatestDecks = ({ decks, isLoading, onSelectDeck, title }) => {
   if (!decks || decks.length === 0) {
     return (
       <div className="latest-decks-section">
-        {title && <h2 className="section-title">{title}</h2>}
+        <div className="section-header">
+          {title && <h2 className="section-title">{title}</h2>}
+        </div>
         <div className="latest-decks-empty">
           <p>No decks found. Time to forge your first one!</p>
         </div>
@@ -29,7 +40,14 @@ const LatestDecks = ({ decks, isLoading, onSelectDeck, title }) => {
   // -- Renderizado de la Cuadrícula de Mazos --
   return (
     <div className="latest-decks-section">
-      {title && <h2 className="section-title">{title}</h2>}
+      <div className="section-header">
+        {title && <h2 className="section-title">{title}</h2>}
+        {showSeeMore && (
+          <Link to="/decks" className="see-more-link">
+            See More →
+          </Link>
+        )}
+      </div>
       <div className="latest-decks-grid">
         {decks.map((deck) => (
           <div

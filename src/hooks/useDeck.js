@@ -23,14 +23,18 @@ export function useDeck(initialDeckId = 1) {
       try {
         const user = JSON.parse(localStorage.getItem("riftbound_user"));
         const data = await api.fetchDeck(id, user?.id);
-        if (data) {
+        if (data && !data.error) {
           setSelectedDeck(data);
           setError(null);
+        } else if (data && data.error) {
+          setError(data.error);
         } else {
           setError("Failed to load deck");
         }
       } catch (err) {
-        setError("Failed to load deck");
+        // Si el error viene de handleResponse como una excepción con el mensaje del JSON
+        const errorMessage = err.message || "Failed to load deck";
+        setError(errorMessage);
         console.error(err);
       } finally {
         setIsLoading(false);

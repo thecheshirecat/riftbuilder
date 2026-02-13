@@ -2,14 +2,38 @@
   width: 100%;
 }
 
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
 .section-title {
   font-size: 2rem;
   font-weight: 800;
   color: #f8fafc;
-  margin-bottom: 15px;
+  margin: 0;
   text-align: left;
   letter-spacing: -0.025em;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.see-more-link {
+  color: #3b82f6;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1.1rem;
+  transition: all 0.3s ease;
+  padding: 8px 16px;
+  border-radius: 8px;
+  background: rgba(59, 130, 246, 0.1);
+}
+
+.see-more-link:hover {
+  background: rgba(59, 130, 246, 0.2);
+  transform: translateX(5px);
+  color: #60a5fa;
 }
 
 .latest-decks-grid {

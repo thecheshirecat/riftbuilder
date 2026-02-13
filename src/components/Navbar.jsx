@@ -64,6 +64,9 @@ function Navbar() {
 
         {/* Enlaces de Navegación (con clase active para menú móvil) */}
         <div className={`navbar-links ${isMenuOpen ? "active" : ""}`}>
+          <Link to="/decks" className="nav-item" onClick={() => setIsMenuOpen(false)}>
+            Deck Gallery
+          </Link>
           <Link to="/my-decks" className="nav-item" onClick={() => setIsMenuOpen(false)}>
             My Decks
           </Link>
