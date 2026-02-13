@@ -118,7 +118,7 @@ function DeckViewPage() {
             onUpdateMetadata={updateDeckMetadata}
             onDeleteDeck={handleDeleteDeck}
             onSetMainChampion={setMainChampionId}
-            onCardClick={setSelectedCard}
+            setSelectedCard={setSelectedCard}
             isOwner={isOwner}
             deckId={selectedDeck.id}
             isEditingMode={false}

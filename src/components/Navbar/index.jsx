@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import * as api from "../../services/riftbound-api";
 import { useToast } from "../Toast/index";
@@ -55,7 +55,7 @@ const NavLinks = styled.div`
   }
 `;
 
-const NavItem = styled(Link)`
+const NavItem = styled(NavLink)`
   color: rgba(255, 255, 255, 0.8);
   text-decoration: none;
   font-size: 0.95rem;
@@ -68,6 +68,12 @@ const NavItem = styled(Link)`
   &:hover {
     color: #fff;
     background: rgba(255, 255, 255, 0.05);
+  }
+
+  &.active {
+    color: ${(props) => props.theme.colors.primary};
+    background: rgba(77, 171, 247, 0.1);
+    font-weight: 700;
   }
 `;
 

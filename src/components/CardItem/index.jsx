@@ -3,8 +3,8 @@ import styled from "styled-components";
 
 const CardWrapper = styled.div`
   border-radius: 12px;
-  box-shadow: ${props => props.theme.shadows.main};
-  transition: ${props => props.theme.effects.transition};
+  box-shadow: ${(props) => props.theme.shadows.main};
+  transition: ${(props) => props.theme.effects.transition};
   position: relative;
   width: 100%;
   overflow: hidden;
@@ -25,13 +25,13 @@ const ListItem = styled.div`
   border-radius: 10px;
   padding: 12px 20px;
   gap: 20px;
-  transition: ${props => props.theme.effects.transition};
+  transition: ${(props) => props.theme.effects.transition};
   cursor: pointer;
   width: 100%;
 
   &:hover {
     background: rgba(255, 255, 255, 0.08);
-    border-color: ${props => props.theme.colors.primary};
+    border-color: ${(props) => props.theme.colors.primary};
     transform: translateX(4px);
   }
 `;
@@ -51,7 +51,7 @@ const ListItemName = styled.span`
 
 const ListItemType = styled.span`
   font-size: 0.75rem;
-  color: ${props => props.theme.colors.textDim};
+  color: ${(props) => props.theme.colors.textDim};
   text-transform: uppercase;
   letter-spacing: 0.5px;
 `;
@@ -105,9 +105,9 @@ const QtyControls = styled.div`
     background: rgba(77, 171, 247, 0.1);
     border-color: rgba(77, 171, 247, 0.2);
     padding: 4px 12px;
-    
+
     span {
-      color: ${props => props.theme.colors.primary};
+      color: ${(props) => props.theme.colors.primary};
     }
   }
 `;
@@ -145,10 +145,10 @@ const QuickControls = styled.div`
   z-index: 10;
   border: 1px solid rgba(255, 255, 255, 0.15);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-  transition: ${props => props.theme.effects.transition};
+  transition: ${(props) => props.theme.effects.transition};
 
   &:hover {
-    border-color: ${props => props.theme.colors.primaryGlow};
+    border-color: ${(props) => props.theme.colors.primaryGlow};
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.7);
   }
 
@@ -184,18 +184,18 @@ const ImageContainer = styled.div`
 const Placeholder = styled.div`
   width: 100%;
   aspect-ratio: 2/3;
-  background: ${props => props.theme.colors.bgAccent};
+  background: ${(props) => props.theme.colors.bgAccent};
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
   padding: 20px;
-  color: ${props => props.theme.colors.textDim};
+  color: ${(props) => props.theme.colors.textDim};
   font-weight: bold;
 `;
 
 const ListAddBtn = styled.button`
-  background: ${props => props.theme.colors.primary};
+  background: ${(props) => props.theme.colors.primary};
   color: white;
   border: none;
   padding: 6px 16px;
@@ -216,6 +216,7 @@ function CardItem({
   onRemove,
   quantity,
   viewMode = "grid",
+  size = "medium",
 }) {
   const handleClick = (e) => {
     onAdd && onAdd(card);
@@ -223,7 +224,9 @@ function CardItem({
 
   const handleContextMenu = (e) => {
     e.preventDefault();
-    onRightClick(card);
+    if (typeof onRightClick === "function") {
+      onRightClick(card);
+    }
   };
 
   if (viewMode === "list") {
@@ -256,9 +259,7 @@ function CardItem({
                 <CtrlBtn onClick={() => onRemove(card.id)}>-</CtrlBtn>
               )}
               <QtyVal>x{quantity}</QtyVal>
-              {onAdd && (
-                <CtrlBtn onClick={() => onAdd(card)}>+</CtrlBtn>
-              )}
+              {onAdd && <CtrlBtn onClick={() => onAdd(card)}>+</CtrlBtn>}
             </QtyControls>
           )}
           {quantity === 0 && onAdd && (

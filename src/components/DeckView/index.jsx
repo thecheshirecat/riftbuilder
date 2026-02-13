@@ -208,7 +208,6 @@ const IdentityContainer = styled.div`
     rgba(0, 0, 0, 0.3) 0%,
     rgba(0, 0, 0, 0.5) 100%
   );
-  border-bottom: 1px solid ${(props) => props.theme.colors.border};
   border-top: 1px solid rgba(255, 255, 255, 0.05);
 `;
 
@@ -247,8 +246,7 @@ const StyledSection = styled.div`
   width: 100%;
   box-sizing: border-box;
   padding: 15px;
-  background: ${(props) =>
-    props.isGrid ? "rgba(0, 0, 0, 0.1)" : "rgba(0, 0, 0, 0.2)"};
+  background: #1e1e1e;
   border: 1px solid rgba(255, 255, 255, 0.05);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
   border-radius: 12px;
@@ -264,8 +262,8 @@ const StyledSection = styled.div`
 
 const GridVisual = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-  gap: 15px;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 20px;
 `;
 
 const ListMini = styled.div`
@@ -378,7 +376,7 @@ const DeckView = ({
   setIsEditingMode,
   setSelectedCard,
   viewMode,
-  setViewMode,
+  onViewModeChange,
   validation,
   isOwner,
 }) => {
@@ -449,13 +447,13 @@ const DeckView = ({
           <PillContainer>
             <PillButton
               active={viewMode === "grid"}
-              onClick={() => setViewMode("grid")}
+              onClick={() => onViewModeChange("grid")}
             >
               <PillIcon>⠿</PillIcon> Grid
             </PillButton>
             <PillButton
               active={viewMode === "list"}
-              onClick={() => setViewMode("list")}
+              onClick={() => onViewModeChange("list")}
             >
               <PillIcon>☰</PillIcon> List
             </PillButton>

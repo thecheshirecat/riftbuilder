@@ -64,7 +64,7 @@ const CloseButton = styled.button`
   align-items: center;
   justify-content: center;
   z-index: 100;
-  transition: ${(props) => props.theme.transitions.default};
+  transition: all 0.2s ease;
 
   &:hover {
     background: rgba(255, 255, 255, 0.2);
@@ -275,7 +275,7 @@ const AddButton = styled.button`
   font-weight: 700;
   font-size: 1.1rem;
   cursor: pointer;
-  transition: ${(props) => props.theme.transitions.default};
+  transition: all 0.2s ease;
   flex: 1;
 
   &:hover {
