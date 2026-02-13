@@ -1,0 +1,52 @@
+// src/styles/_mixins.scss
+@import "variables";
+
+@mixin page-container {
+  width: 100%;
+  max-width: $max-width;
+  margin: 0 auto;
+  padding: 40px 20px;
+  box-sizing: border-box;
+
+  @media (max-width: $tablet) {
+    padding: 20px 15px;
+  }
+}
+
+@mixin auth-card {
+  background: rgba(30, 30, 30, 0.85);
+  padding: 40px;
+  border-radius: 20px;
+  border: 1px solid $border-color;
+  width: 100%;
+  max-width: 450px;
+  backdrop-filter: $backdrop-blur;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  text-align: center;
+}
+
+@mixin auth-button {
+  width: 100%;
+  padding: 12px;
+  background: $primary;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: $transition;
+
+  &:hover {
+    background: $primary-hover;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4);
+  }
+
+  &:disabled {
+    background: #4b5563;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+}

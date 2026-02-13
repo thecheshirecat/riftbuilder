@@ -17,7 +17,9 @@
     "react-dom": "^19.2.4",
     "react-router-dom": "^7.13.0",
     "react-scripts": "5.0.1",
+    "sass": "^1.97.3",
     "sqlite3": "^5.1.7",
+    "styled-components": "^6.3.9",
     "web-vitals": "^2.1.4"
   },
   "scripts": {

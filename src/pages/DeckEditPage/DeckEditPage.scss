@@ -1,0 +1,62 @@
+@import "../../styles/variables";
+@import "../../styles/mixins";
+
+.deck-edit-page {
+  .deck-edit-main {
+    padding: 15px;
+  }
+
+  .content-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 30px;
+    align-items: start;
+    transition: all 0.2s;
+
+    &.full-deck {
+      grid-template-columns: 1fr;
+    }
+
+    @media (max-width: 1024px) {
+      grid-template-columns: 1fr;
+      grid-template-rows: 1fr auto;
+      gap: 20px;
+    }
+  }
+
+  .card-list-section {
+    background: #1e1e1e;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .deck-section {
+    background: #1e1e1e;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    flex-direction: column;
+
+    &::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: #121212;
+      border-radius: 0 12px 12px 0;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: #252525;
+      border-radius: 4px;
+    }
+
+    @media (max-width: 1024px) {
+      height: 300px;
+    }
+  }
+}

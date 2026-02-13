@@ -1,0 +1,17 @@
+// src/styles/global.scss
+@import "variables";
+@import "mixins";
+
+// Estilos que se comparten pero no son componentes
+.auth-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 70px);
+  padding: 20px;
+  background: radial-gradient(circle at center, #1a1a1a 0%, #0a0a0a 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+// Otros estilos globales compartidos pueden ir aquí
