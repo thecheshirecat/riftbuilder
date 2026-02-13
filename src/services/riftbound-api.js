@@ -56,15 +56,18 @@ export const fetchLatestDecks = async (limit = 6) => {
   }
 };
 
-export const fetchDecks = async (userId = null) => {
+export const fetchDecks = async (userId = null, page = 1, limit = 12) => {
   try {
-    const url = userId
-      ? `${API_URL}/decks?userId=${userId}`
-      : `${API_URL}/decks`;
+    const params = new URLSearchParams();
+    if (userId) params.append("userId", userId);
+    params.append("page", page);
+    params.append("limit", limit);
+
+    const url = `${API_URL}/decks?${params.toString()}`;
     return await handleResponse(await fetch(url));
   } catch (error) {
     console.error("Error fetching decks:", error);
-    return [];
+    return { data: [], pagination: { pages: 0, current: 1 } };
   }
 };
 

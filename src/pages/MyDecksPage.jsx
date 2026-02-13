@@ -28,8 +28,8 @@ function MyDecksPage() {
     if (user) {
       const loadDecks = async () => {
         try {
-          const data = await api.fetchDecks(user.id);
-          setDecks(data);
+          const result = await api.fetchDecks(user.id, 1, 100); // Para My Decks cargamos muchos por ahora
+          setDecks(result.data || []);
         } catch (err) {
           console.error("Error loading decks:", err);
           showToast("Error loading your decks", "error");

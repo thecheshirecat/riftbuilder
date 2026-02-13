@@ -3,25 +3,38 @@ import { useNavigate } from "react-router-dom";
 import * as api from "../services/riftbound-api";
 import LatestDecks from "../components/LatestDecks";
 import "./MyDecksPage.css"; // Reusamos estilos similares
+import "./DecksGalleryPage.css";
+import HeroCards from "../components/HeroCards";
 
 function DecksGalleryPage() {
   const [decks, setDecks] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [pagination, setPagination] = useState({ page: 1, pages: 1 });
   const navigate = useNavigate();
 
+  const loadDecks = async (page = 1) => {
+    setIsLoading(true);
+    try {
+      const result = await api.fetchDecks(null, page, 12);
+      setDecks(result.data || []);
+      setPagination(result.pagination || { page: 1, pages: 1 });
+    } catch (err) {
+      console.error("Error loading gallery:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const loadDecks = async () => {
-      try {
-        const data = await api.fetchDecks(); // Trae todos los mazos públicos
-        setDecks(data);
-      } catch (err) {
-        console.error("Error loading gallery:", err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    loadDecks();
+    loadDecks(1);
   }, []);
+
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= pagination.pages) {
+      loadDecks(newPage);
+      window.scrollTo(0, 0);
+    }
+  };
 
   const handleSelectDeck = (id) => {
     navigate(`/view/${id}`);
@@ -29,9 +42,10 @@ function DecksGalleryPage() {
 
   return (
     <div className="my-decks-page gallery-page">
+      <HeroCards />
       <div className="content-wrapper">
         <header className="page-header">
-          <div className="header-hero no-hover">
+          <div className="header-hero no-hover decks-list">
             <h1>Deck Gallery</h1>
             <p>Explore all valid decks from the community</p>
           </div>
@@ -42,9 +56,33 @@ function DecksGalleryPage() {
             decks={decks}
             isLoading={isLoading}
             onSelectDeck={handleSelectDeck}
-            title="Public Library"
+            title={`Public Library (Page ${pagination.page} of ${pagination.pages})`}
             showSeeMore={false}
           />
+
+          {pagination.pages > 1 && (
+            <div className="pagination-controls">
+              <button
+                className="pagination-btn"
+                disabled={pagination.page === 1}
+                onClick={() => handlePageChange(pagination.page - 1)}
+              >
+                Previous
+              </button>
+              <div className="pagination-info">
+                <span>
+                  Page {pagination.page} of {pagination.pages}
+                </span>
+              </div>
+              <button
+                className="pagination-btn"
+                disabled={pagination.page === pagination.pages}
+                onClick={() => handlePageChange(pagination.page + 1)}
+              >
+                Next
+              </button>
+            </div>
+          )}
         </main>
       </div>
     </div>

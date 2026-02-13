@@ -254,7 +254,28 @@ router.get("/cards/random", (req, res) => {
 // Get all decks
 router.get("/decks", async (req, res) => {
   const userId = req.query.userId ? parseInt(req.query.userId) : null;
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 12;
+  const offset = (page - 1) * limit;
+
   try {
+    let whereClause = "";
+    const params = [];
+
+    if (userId) {
+      whereClause = " WHERE d.user_id = ?";
+      params.push(userId);
+    } else {
+      // Si no hay userId, solo devolver públicos
+      whereClause =
+        " WHERE (d.visibility = 'public' OR d.visibility IS NULL OR d.visibility = '')";
+    }
+
+    // Contar total para paginación
+    const countSql = `SELECT COUNT(*) as total FROM decks d ${whereClause}`;
+    const countResult = await getQuery(countSql, params);
+    const total = countResult.total;
+
     let sql = `
       SELECT d.*, u.username,
         (SELECT c.image_url 
@@ -264,18 +285,22 @@ router.get("/decks", async (req, res) => {
          LIMIT 1) as legend_image
       FROM decks d
       LEFT JOIN users u ON d.user_id = u.id
+      ${whereClause}
+      ORDER BY d.id DESC
+      LIMIT ? OFFSET ?
     `;
-    const params = [];
-    if (userId) {
-      sql += " WHERE d.user_id = ?";
-      params.push(userId);
-    } else {
-      // Si no hay userId, solo devolver públicos
-      sql +=
-        " WHERE (d.visibility = 'public' OR d.visibility IS NULL OR d.visibility = '')";
-    }
-    const rows = await allQuery(sql, params);
-    res.json(rows);
+
+    const rows = await allQuery(sql, [...params, limit, offset]);
+
+    res.json({
+      data: rows,
+      pagination: {
+        total,
+        page,
+        limit,
+        pages: Math.ceil(total / limit),
+      },
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
