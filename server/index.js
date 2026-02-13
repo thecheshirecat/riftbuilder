@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const cron = require("node-cron");
 const { initSchema } = require("./database");
 const { fullSync } = require("./scripts/sync");
 
@@ -19,20 +20,16 @@ initSchema();
 // Register Unified API Routes
 app.use("/api", apiRoutes);
 
-// The /api/domains route is now handled directly inside cardRoutes
-// and we can remove the legacy redirect logic that was here.
-
 // Start Server
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 
-  // Initial database sync
+  // Initial database sync on startup
   fullSync();
 
-  // Scheduled daily card and domain sync
-  const DAILY_INTERVAL = 24 * 60 * 60 * 1000;
-  setInterval(() => {
-    console.log("Running scheduled daily card and domain sync...");
+  // Scheduled daily card and domain sync at 00:00
+  cron.schedule("0 0 * * *", () => {
+    console.log("Running scheduled daily card and domain sync at 00:00...");
     fullSync();
-  }, DAILY_INTERVAL);
+  });
 });
