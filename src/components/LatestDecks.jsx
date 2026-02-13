@@ -60,10 +60,10 @@ const LatestDecks = ({ decks, isLoading, onSelectDeck, title }) => {
                 <p>{deck.description || "No description provided."}</p>
               </div>
 
-              {/* Pie de la tarjeta con fecha y botón de acción */}
+              {/* Pie de la tarjeta con nombre de usuario y botón de acción */}
               <div className="deck-footer">
-                <span className="deck-date">
-                  {new Date(deck.updated_at || Date.now()).toLocaleDateString()}
+                <span className="deck-author">
+                  @{deck.username || "Anonymous"}
                 </span>
                 <button className="view-btn">View Deck</button>
               </div>

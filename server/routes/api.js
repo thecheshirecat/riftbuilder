@@ -237,13 +237,14 @@ router.get("/decks", async (req, res) => {
   const userId = req.query.userId ? parseInt(req.query.userId) : null;
   try {
     let sql = `
-      SELECT d.*, 
+      SELECT d.*, u.username,
         (SELECT c.image_url 
          FROM cards c 
          JOIN deck_cards dc ON c.id = dc.card_id 
          WHERE dc.deck_id = d.id AND c.type = 'Legend' 
          LIMIT 1) as legend_image
       FROM decks d
+      LEFT JOIN users u ON d.user_id = u.id
     `;
     const params = [];
     if (userId) {
@@ -274,6 +275,7 @@ router.get("/latest-decks", async (req, res) => {
       FROM decks d
       LEFT JOIN users u ON d.user_id = u.id
       WHERE (d.visibility = 'public' OR d.visibility IS NULL OR d.visibility = '')
+      AND d.is_valid = 1
       ORDER BY d.id DESC 
       LIMIT 10
     `;
@@ -303,13 +305,14 @@ router.get("/decks/:deckId", async (req, res) => {
   const userId = req.query.userId ? parseInt(req.query.userId) : null;
   try {
     const deckSql = `
-      SELECT d.*, 
+      SELECT d.*, u.username,
         (SELECT c.image_url 
          FROM cards c 
          JOIN deck_cards dc ON c.id = dc.card_id 
          WHERE dc.deck_id = d.id AND c.type = 'Legend' 
          LIMIT 1) as legend_image
       FROM decks d 
+      LEFT JOIN users u ON d.user_id = u.id
       WHERE d.id = ?
     `;
     const deck = await getQuery(deckSql, [req.params.deckId]);
@@ -333,36 +336,37 @@ router.get("/decks/:deckId", async (req, res) => {
 
 // Update deck
 router.patch("/decks/:deckId", async (req, res) => {
-  const { name, description, mainChampionId, visibility } = req.body;
+  const { name, description, mainChampionId, visibility, is_valid } = req.body;
   try {
     if (mainChampionId !== undefined) {
       await runQuery("UPDATE decks SET main_champion_id = ? WHERE id = ?", [
         mainChampionId,
         req.params.deckId,
       ]);
-    } else {
-      const updates = [];
-      const params = [];
-      if (name !== undefined) {
-        updates.push("name = ?");
-        params.push(name);
-      }
-      if (description !== undefined) {
-        updates.push("description = ?");
-        params.push(description);
-      }
-      if (visibility !== undefined) {
-        updates.push("visibility = ?");
-        params.push(visibility);
-      }
-
-      if (updates.length > 0) {
-        params.push(req.params.deckId);
-        await runQuery(
-          `UPDATE decks SET ${updates.join(", ")} WHERE id = ?`,
-          params,
-        );
-      }
+    }
+    if (name !== undefined) {
+      await runQuery("UPDATE decks SET name = ? WHERE id = ?", [
+        name,
+        req.params.deckId,
+      ]);
+    }
+    if (description !== undefined) {
+      await runQuery("UPDATE decks SET description = ? WHERE id = ?", [
+        description,
+        req.params.deckId,
+      ]);
+    }
+    if (visibility !== undefined) {
+      await runQuery("UPDATE decks SET visibility = ? WHERE id = ?", [
+        visibility,
+        req.params.deckId,
+      ]);
+    }
+    if (is_valid !== undefined) {
+      await runQuery("UPDATE decks SET is_valid = ? WHERE id = ?", [
+        is_valid ? 1 : 0,
+        req.params.deckId,
+      ]);
     }
     res.json({ success: true });
   } catch (err) {

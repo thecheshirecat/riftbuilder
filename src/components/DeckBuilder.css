@@ -69,6 +69,22 @@
   color: white;
 }
 
+.import-deck-btn {
+  background: rgba(64, 192, 87, 0.1);
+  border: 1px solid #51cf66;
+  color: #51cf66;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.import-deck-btn:hover {
+  background: #51cf66;
+  color: white;
+}
+
 .deck-metadata-edit-form {
   display: flex;
   flex-direction: column;

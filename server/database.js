@@ -114,6 +114,10 @@ const initSchema = () => {
           if (!hasUserId) {
             db.run("ALTER TABLE decks ADD COLUMN user_id INTEGER");
           }
+          const hasIsValid = columns.some((c) => c.name === "is_valid");
+          if (!hasIsValid) {
+            db.run("ALTER TABLE decks ADD COLUMN is_valid INTEGER DEFAULT 0");
+          }
         });
       },
     );

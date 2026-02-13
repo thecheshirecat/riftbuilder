@@ -57,6 +57,7 @@ const DeckBuilder = ({
   mainChampionId,
   updateDeckMetadata,
   setIsEditingMode,
+  onImportDeck,
   removeCardFromDeck,
   addCardToDeck,
   setSelectedCard,
@@ -83,6 +84,16 @@ const DeckBuilder = ({
       setEditVisibility(selectedDeck.visibility || "public");
     }
   }, [isEditingMetadata, selectedDeck]);
+
+  // Sync is_valid when validation changes
+  React.useEffect(() => {
+    if (selectedDeck.id && validation.isValid !== undefined) {
+      // Solo actualizamos si el valor en DB es diferente al actual
+      if (selectedDeck.is_valid !== (validation.isValid ? 1 : 0)) {
+        updateDeckMetadata(selectedDeck.id, { is_valid: validation.isValid });
+      }
+    }
+  }, [validation.isValid, selectedDeck.id, selectedDeck.is_valid, updateDeckMetadata]);
 
   const handleSaveMetadata = () => {
     updateDeckMetadata(selectedDeck.id, {
@@ -129,6 +140,13 @@ const DeckBuilder = ({
             </div>
           </div>
           <div className="deck-header-actions">
+            <button
+              className="import-deck-btn"
+              onClick={onImportDeck}
+              title="Import deck from clipboard list"
+            >
+              📥 Import
+            </button>
             <button
               className="toggle-edit-btn active"
               onClick={() => setIsEditingMode(false)}

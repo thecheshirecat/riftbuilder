@@ -88,9 +88,14 @@ export function useDeck(initialDeckId = 1) {
 
   // Update deck metadata
   const updateDeckMetadata = useCallback(
-    async (deckId, { name, description, visibility }) => {
+    async (deckId, { name, description, visibility, is_valid }) => {
       try {
-        await api.updateDeck(deckId, { name, description, visibility });
+        await api.updateDeck(deckId, {
+          name,
+          description,
+          visibility,
+          is_valid,
+        });
         await fetchSelectedDeck(deckId);
       } catch (err) {
         console.error("Error updating metadata:", err);
@@ -108,6 +113,42 @@ export function useDeck(initialDeckId = 1) {
       return false;
     }
   }, []);
+
+  // Bulk add cards to deck
+  const addCardsToDeck = useCallback(
+    async (deckId, cardIdsWithSideboard) => {
+      try {
+        // En un entorno ideal, haríamos una sola llamada al API.
+        // Como el API actual es individual, lo hacemos en serie por ahora para asegurar integridad.
+        for (const { cardId, isSideboard } of cardIdsWithSideboard) {
+          await api.addCardToDeck(deckId, cardId, isSideboard);
+        }
+        await fetchSelectedDeck(deckId);
+      } catch (err) {
+        console.error("Error bulk adding cards:", err);
+      }
+    },
+    [fetchSelectedDeck],
+  );
+
+  // Clear all cards from deck
+  const clearDeck = useCallback(
+    async (deckId) => {
+      try {
+        // Obtenemos las cartas actuales para saber qué borrar
+        // El API no tiene un "borrar todo", así que borramos una a una (o podrías añadir un endpoint en el futuro)
+        // Por simplicidad y sin tocar el server por ahora:
+        const currentCards = selectedDeck.cards;
+        for (const card of currentCards) {
+          await api.removeCardFromDeck(deckId, card.id, card.is_sideboard);
+        }
+        await fetchSelectedDeck(deckId);
+      } catch (err) {
+        console.error("Error clearing deck:", err);
+      }
+    },
+    [selectedDeck.cards, fetchSelectedDeck],
+  );
 
   // Derived: Card counts by name (for UI limits and indicators)
   const cardCounts = useMemo(() => {
@@ -130,5 +171,7 @@ export function useDeck(initialDeckId = 1) {
     addCardToDeck,
     removeCardFromDeck,
     setMainChampionId,
+    addCardsToDeck,
+    clearDeck,
   };
 }

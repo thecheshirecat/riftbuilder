@@ -25,7 +25,7 @@ function Navbar() {
 
   /**
    * Lógica para la creación de un nuevo mazo.
-   * Requiere autenticación y solicita un nombre al usuario.
+   * Crea un mazo con nombre predeterminado y redirige al editor.
    */
   const handleCreateDeck = async () => {
     if (!user) {
@@ -35,11 +35,11 @@ function Navbar() {
       return;
     }
 
-    const name = prompt("Enter deck name:");
-    if (!name || !name.trim()) return;
-
     try {
-      const data = await api.createDeck(name, user?.id);
+      // Creamos un mazo con un nombre genérico, el usuario podrá cambiarlo en el editor
+      const defaultName = "New Deck";
+      const data = await api.createDeck(defaultName, user?.id);
+      
       if (data && data.id) {
         navigate(`/edit/${data.id}`);
         setIsMenuOpen(false);

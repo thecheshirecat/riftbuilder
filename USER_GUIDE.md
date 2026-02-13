@@ -1,104 +1,69 @@
 # Riftbound Deck Builder - User Guide
 
-Welcome to the **Riftbound Deck Builder**, a new tool for forging your decks. This guide will walk you through the core features of the platform.
+Welcome to the **Riftbound Deck Builder**, a new tool for forging your decks. This guide covers everything from your first registration to advanced deck validation.
+
+---
 
 ## 1. Getting Started
 
-### Registration & Login
+### Access & Identity
 
-To start creating and saving your own decks, you need to create an account:
-
-- **Register**: Click on the "Register" link in the navigation bar to create a new account.
-- **Login**: Use your credentials to access your personal collection.
-
-### Exploring Decks
-
-The **Home Page** showcases the latest decks created by the community. You can click on any deck card to view its full composition, including its identity, strategy, and card breakdown.
+- **Registration & Login**: Create an account to save your collection. Your username will be displayed as the author of your public decks (e.g., `@username`).
+- **Exploring**: The **Home Page** showcases the latest **Valid Decks** created by the community. Click any card to view its full composition.
 
 ---
 
 ## 2. Managing Your Collection
 
-### Managing Your Collection
+The **"My Decks"** section is your personal hub where you can:
 
-Once logged in, the **"My Decks"** section is your personal hub. Here you can:
-
-- View all the decks you've created.
-- See a quick summary of each deck.
-- **Privacy Controls**: Manage who can see your decks.
-- Access the **Deck Forge** to create a brand-new deck from scratch.
-
-### Creating a Deck
-
-Click the **"Create Deck"** button in the navigation bar, the header from the **Home page** or the "My Collection" header to initialize a new deck. You will be automatically redirected to the **Deck Editor**.
+- **Forge New Decks**: Click "Create Deck" (Navbar or Home) to jump directly into the editor.
+- **Control Privacy**: Manage your decks and set their visibility:
+  - **Public**: Visible to everyone in the "Latest Decks" gallery.
+  - **Unlisted**: Only accessible via direct link.
+  - **Private**: Strictly for your eyes only.
 
 ---
 
-## 3. Using the Deck Editor (The Forge)
+## 3. The Forge (Deck Editor)
 
-The editor is divided into two main sections: the **Card Catalog** (left) and the **Deck Manager** (right).
+The editor is divided into the **Card Catalog** (left) and the **Deck Manager** (right).
 
-### Deck Settings & Visibility
+### Core Features
 
-When editing your deck, you can set its **Visibility** to control its exposure:
+- **Import & Export**: Use the **"Import"** button to paste card lists from your clipboard. You can also copy your list from the public view for sharing.
+- **Filtering & Search**: Use the bar to filter by name, elemental **Domains** (Fury, Mind, Calm...), or card type.
+- **Smart Auto-Advance**: The editor automatically switches sections (Legend → Battlefield → Main Deck) as you fulfill requirements.
+- **Sideboard**: Store up to 8 additional cards for situational strategies.
 
-- **Public**: Visible to everyone and featured in the "Latest Decks" section on the Home Page.
-- **Unlisted**: Accessible to anyone with the link, but hidden from public lists and searches.
-- **Private**: Only you can see and access this deck when logged in.
+### Building Requirements
 
-You can also update the deck's **Name** and **Description** directly from the settings panel.
-
-### Building Logic
-
-The editor follows an "Intelligent Flow" to help you build valid decks:
-
-1.  **Identity (Legend)**: Start by picking your Legend. You can only have one.
-2.  **Battlefields**: Select exactly 3 Battlefields to define where your combat takes place.
-3.  **Main Deck**: Add Units, Spells, Gear, and Champions (exactly 40 cards).
-4.  **Runes**: Select up to 12 Runes to empower your strategy.
-
-### Filtering and Searching
-
-Use the **Filter Bar** to find exactly what you need:
-
-- **Search**: Type card names or text.
-- **Domains**: Filter by elemental domains (Fury, Mind, Calm...).
-- **Sections** (deck manager from the right): Quickly switch between Legend, Battlefield, Main Deck, Runes, and Sideboard views.
-- **Smart Auto-Advance**: The editor will automatically switch sections as you complete the requirements (e.g., after picking 3 Battlefields, it switches to the Main Deck).
-
-### Sideboard
-
-If you want to prepare for specific matchups, use the **Sideboard** section to store up to 8 additional cards (Units, Spells, Gear, Champions or Runes).
+1.  **Identity (Legend)**: Every deck needs exactly 1 Legend.
+2.  **Battlefields**: Select exactly 3 Battlefields.
+3.  **Main Deck**: Must contain exactly 40 cards (Units, Spells, Gear, Champions).
+4.  **Runes**: Select exactly 12 Runes that match your Legend's domains.
+5.  **Main Champion**: You must designate a Champion that shares a tag with your Legend.
 
 ---
 
-## 4. Deck Viewing and Sharing
+## 4. Deck Viewing & Sharing
 
-### Public View
-
-When viewing a deck (your own or someone else's):
-
-- **Identity Showcase**: See the Legend and Main Champion at a glance.
-- **Visual Modes**: Toggle between **Grid View** (to see card art) and **List View** (for a compact summary).
-- **Sorting**: Sort cards by Name, Energy cost, Rarity, or Type.
-- **Details**: Right-Click on any card to see its full stats, tags, and abilities. Left click for list view.
-- **Visual Effects**: Enjoy a modern interface with smooth transitions, image scaling, and soft gradients.
-
-### Permissions & Access
-
-- **Edit**: You can only edit decks that you have created. If you are viewing someone else's deck, the "Edit" button will be hidden.
-- **Privacy Enforcement**: Private decks are strictly accessible only to their owners.
-- **Share**: Use the "Share" button to copy the URL and show your creation to others. Unlisted decks are perfect for sharing with friends without making them public.
+- **Visual Modes**: Toggle between **Grid View** (art-focused) and **List View** (compact summary).
+- **Interactions**:
+  - **Right-Click**: See full card stats, tags, and abilities.
+  - **Sorting**: Organize by Name, Energy, Rarity, or Type.
+- **Permissions**: You can only edit your own decks. Public and Unlisted decks can be shared using their unique URL.
 
 ---
 
-## 5. Game Rules & Validations
+## 5. Rules & Validations
 
-The Forge automatically enforces core Riftbound rules:
+The Forge automatically enforces Riftbound rules in real-time:
 
-- **Copy Limit**: Max 1 copy of any Legend/Battlefield. Max 3 copies of any other card.
-- **Deck Size**: The editor will warn you if your main deck is full (40 cards) or your sideboard is full (8 cards).
+- **Validation Badge**: Look for the **✅ Valid Deck** status. Only valid decks are featured publicly.
+- **Copy Limits**: Max 1 copy for Legends/Battlefields. Max 3 copies for any other card (combined total in Main + Sideboard) excluding the Runes.
+- **Visual Feedback**: The editor will highlight errors (e.g., "Missing Legend", "Too many copies") to help you fix your build.
 
 ---
 
-_Forged in the Rift._
+_Forged in the Rift_

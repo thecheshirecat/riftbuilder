@@ -37,6 +37,8 @@ function DeckEditPage() {
     addCardToDeck,
     removeCardFromDeck,
     setMainChampionId,
+    addCardsToDeck,
+    clearDeck,
   } = useDeck(parseInt(deckId));
 
   // -- Referencias para control de flujo --
@@ -382,6 +384,119 @@ function DeckEditPage() {
     window.scrollTo(0, 0);
   };
 
+  /**
+   * Importa un mazo desde un texto copiado (formato "cantidadx Nombre")
+   */
+  const handleImportDeck = async () => {
+    const text = await navigator.clipboard.readText();
+    if (!text) {
+      showToast("Clipboard is empty", "error");
+      return;
+    }
+
+    const lines = text
+      .split("\n")
+      .map((l) => l.trim())
+      .filter((l) => l !== "");
+    if (lines.length === 0) {
+      showToast("No cards found in clipboard", "error");
+      return;
+    }
+
+    showToast("Importing deck...", "info");
+
+    try {
+      // 1. Limpiar el mazo actual primero
+      await clearDeck(selectedDeck.id);
+
+      let isSideboardContext = false;
+      const cardsToImport = [];
+      let importedChampionId = null;
+      const failedCards = [];
+
+      for (const line of lines) {
+        if (line.toLowerCase().includes("sideboard:")) {
+          isSideboardContext = true;
+          continue;
+        }
+
+        // Soportar "1x Nombre" o simplemente "Nombre" (asumiendo 1x)
+        let qty = 1;
+        let cardName = line;
+
+        const match = line.match(/^(\d+)x\s+(.+)$/i);
+        if (match) {
+          qty = parseInt(match[1]);
+          cardName = match[2].trim();
+        }
+
+        // Buscar la carta en la base de datos por nombre
+        // Limpieza extra para nombres con comas o caracteres especiales
+        const cleanName = cardName.trim();
+        const searchResult = await api.fetchCards({ q: cleanName, limit: 10 });
+
+        // Intento de coincidencia exacta (case-insensitive)
+        let card = searchResult.cards.find(
+          (c) => c.name.toLowerCase() === cleanName.toLowerCase(),
+        );
+
+        // Si no hay coincidencia exacta, probar a buscar la parte antes de la primera coma
+        // Útil para "Teemo, Swift Scout" si en la DB está como "Teemo, Scout"
+        if (!card && cleanName.includes(",")) {
+          const firstPart = cleanName.split(",")[0].trim();
+          card = searchResult.cards.find((c) =>
+            c.name.toLowerCase().startsWith(firstPart.toLowerCase()),
+          );
+        }
+
+        if (card) {
+          // Si es un Campeón (qty 1 y no es sideboard)
+          if (
+            qty === 1 &&
+            !isSideboardContext &&
+            card.type === "Champion" &&
+            !importedChampionId
+          ) {
+            importedChampionId = card.id;
+          }
+
+          for (let i = 0; i < qty; i++) {
+            cardsToImport.push({
+              cardId: card.id,
+              isSideboard: isSideboardContext,
+            });
+          }
+        } else {
+          failedCards.push(cardName);
+          console.warn(`Card not found: ${cardName}`);
+        }
+      }
+
+      if (cardsToImport.length > 0) {
+        await addCardsToDeck(selectedDeck.id, cardsToImport);
+
+        // Si detectamos un campeón, establecerlo como principal
+        if (importedChampionId) {
+          await setMainChampionId(selectedDeck.id, importedChampionId);
+        }
+
+        if (failedCards.length > 0) {
+          showToast(
+            `Imported with issues. Missing: ${failedCards.join(", ")}`,
+            "warning",
+          );
+        } else {
+          showToast("Deck imported successfully!", "success");
+        }
+      } else {
+        showToast("No valid cards found to import", "warning");
+      }
+    } catch (err) {
+      console.error("Error importing deck:", err);
+      showToast("Failed to import deck", "error");
+    }
+  };
+
   // Si no hay usuario, mostramos un estado de carga mientras redirigimos
   if (!user) {
     return <div className="loading">Redirecting to login...</div>;
@@ -445,6 +560,7 @@ function DeckEditPage() {
               viewMode={viewMode}
               setSelectedCard={setSelectedCard}
               onSectionClick={handleSectionClick}
+              onImportDeck={handleImportDeck}
               activeSection={filters.activeSection}
               sort={filters.sort}
               order={filters.order}
