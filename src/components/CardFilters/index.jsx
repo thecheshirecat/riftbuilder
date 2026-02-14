@@ -40,20 +40,21 @@ const SearchControls = styled.div`
   margin-bottom: 24px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   position: sticky;
-  z-index: 11;
+  z-index: 1000;
   top: 70px;
+  left: 0;
+  right: 0;
+  width: 100%;
 
   @media (max-width: ${(props) => props.theme.breakpoints.tablet}) {
     padding: 14px;
     gap: 12px;
     margin-bottom: 16px;
-    top: 60px;
   }
   @media (max-width: ${(props) => props.theme.breakpoints.mobile}) {
     padding: 10px;
     gap: 10px;
     margin-bottom: 12px;
-    top: 56px;
   }
 `;
 
@@ -167,15 +168,14 @@ const ActionButton = styled.button`
 `;
 
 const AdvancedFiltersPanel = styled.div`
-  max-height: ${(props) => (props.expanded ? "500px" : "0")};
-  overflow: hidden;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  opacity: ${(props) => (props.expanded ? "1" : "0")};
-  border-top: ${(props) =>
-    props.expanded
-      ? "1px solid rgba(255, 255, 255, 0.1)"
-      : "0 solid rgba(255, 255, 255, 0.1)"};
+  display: grid;
+  grid-template-rows: ${(props) => (props.expanded ? "1fr" : "0fr")};
+  transition: grid-template-rows 300ms ease;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
   padding-top: ${(props) => (props.expanded ? "20px" : "0")};
+  & > * {
+    overflow: hidden;
+  }
 `;
 
 const AdvancedGrid = styled.div`

@@ -11,6 +11,13 @@ const Container = styled.div`
   overflow: hidden;
   pointer-events: none;
   opacity: 0.4;
+
+  @media (max-width: ${(props) => props.theme.breakpoints.tablet}) {
+    opacity: 0.25;
+  }
+  @media (max-width: ${(props) => props.theme.breakpoints.mobile}) {
+    display: none;
+  }
 `;
 
 const Perspective = styled.div`

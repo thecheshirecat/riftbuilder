@@ -173,10 +173,12 @@ const ImageContainer = styled.div`
   width: 100%;
   position: relative;
   cursor: pointer;
+  aspect-ratio: ${(props) => props.ratio || "2/3"};
 
   img {
     width: 100%;
-    object-fit: contain;
+    height: 100%;
+    object-fit: cover;
     display: block;
   }
 `;
@@ -294,7 +296,7 @@ function CardItem({
           )}
         </QuickControls>
       )}
-      <ImageContainer>
+      <ImageContainer ratio={card?.type === "Battlefield" ? "3/2" : "2/3"}>
         {card.image_url ? (
           <img src={card.image_url} alt={card.name} loading="lazy" />
         ) : (

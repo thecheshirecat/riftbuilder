@@ -12,21 +12,12 @@ const ListContainer = styled.div`
 
 const ScrollWrapper = styled.div`
   flex: 1;
-  overflow-y: auto;
+  overflow-y: visible;
   padding: 0;
   position: relative;
 
   &::-webkit-scrollbar {
-    width: 8px;
-  }
-
-  &::-webkit-scrollbar-track {
-    background: ${(props) => props.theme.colors.bgDark};
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: #333;
-    border-radius: 4px;
+    width: 0;
   }
 `;
 

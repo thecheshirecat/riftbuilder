@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from "react";
 import styled, { keyframes } from "styled-components";
+import CardGrid from "../CardGrid/index";
 import CardItem from "../CardItem/index";
 import { groupCards, sortCards } from "../../utils/cardUtils";
 import { useToast } from "../Toast/index";
@@ -251,9 +252,6 @@ const DeckContainer = styled.div`
 
   @media (max-width: ${(props) => props.theme.breakpoints.mobile}) {
     gap: 10px;
-    &.view-mode-active {
-      padding-bottom: 20px;
-    }
   }
 `;
 
@@ -294,70 +292,42 @@ const Description = styled.p`
 `;
 
 const IdentityContainer = styled.div`
-  padding: 40px 30px;
-  background: linear-gradient(
-    180deg,
-    rgba(0, 0, 0, 0.3) 0%,
-    rgba(0, 0, 0, 0.5) 100%
-  );
+  padding: 8px 0;
+  background: transparent;
   border-top: 1px solid rgba(255, 255, 255, 0.05);
-
-  @media (max-width: ${(props) => props.theme.breakpoints.mobile}) {
-    padding: 16px 12px;
-  }
-`;
-
-const IdentityGrid = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-  max-width: 1400px;
   margin: 0 auto;
-  justify-content: center;
-
-  .card-item-container,
-  & > div {
-    width: 220px !important;
-    height: auto !important;
-  }
-
-  img {
-    width: 100% !important;
-    height: auto !important;
-    object-fit: contain !important;
-  }
 
   @media (max-width: ${(props) => props.theme.breakpoints.tablet}) {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 10px;
-    .card-item-container,
-    & > div {
-      width: auto !important;
-    }
+    padding: 8px 0;
   }
+
   @media (max-width: ${(props) => props.theme.breakpoints.mobile}) {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 8px;
-    .card-item-container,
-    & > div {
-      width: auto !important;
-    }
+    padding: 6px 0;
   }
 `;
+
+const IdentityInner = styled.div`
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 10px;
+  @media (max-width: ${(props) => props.theme.breakpoints.mobile}) {
+    padding: 0 8px;
+  }
+`;
+const IdentityGrid = CardGrid;
 
 const DeckLayout = styled.div`
   display: flex;
   flex-direction: column;
   gap: 15px;
   width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
   padding-top: 0;
   box-sizing: border-box;
 
   @media (max-width: ${(props) => props.theme.breakpoints.mobile}) {
     gap: 10px;
-    padding: 10px;
   }
 `;
 
@@ -396,24 +366,7 @@ const StyledSection = styled.div`
   }
 `;
 
-const GridVisual = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 20px;
-
-  @media (max-width: ${(props) => props.theme.breakpoints.desktop}) {
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: 18px;
-  }
-  @media (max-width: ${(props) => props.theme.breakpoints.tablet}) {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 12px;
-  }
-  @media (max-width: ${(props) => props.theme.breakpoints.mobile}) {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 8px;
-  }
-`;
+const GridVisual = CardGrid;
 
 const ListMini = styled.div`
   display: grid;
@@ -682,7 +635,7 @@ const DeckView = ({
         </NavRight>
       </Nav>
 
-      <DeckContainer className="view-mode-active">
+      <DeckContainer>
         <HeroSection>
           {selectedDeck?.name && <h1>{selectedDeck.name}</h1>}
           {selectedDeck?.description && (
@@ -692,31 +645,33 @@ const DeckView = ({
 
         {legend && (
           <IdentityContainer>
-            <IdentityGrid>
-              <CardItem
-                card={legend}
-                quantity={1}
-                onRightClick={setSelectedCard}
-                viewMode="grid"
-              />
-              {mainChampion && (
+            <IdentityInner>
+              <IdentityGrid>
                 <CardItem
-                  card={mainChampion}
+                  card={legend}
                   quantity={1}
                   onRightClick={setSelectedCard}
                   viewMode="grid"
                 />
-              )}
-              {runesGrouped.map((card, index) => (
-                <CardItem
-                  key={`${card.id}-${index}`}
-                  card={card}
-                  quantity={card.quantity}
-                  onRightClick={setSelectedCard}
-                  viewMode="grid"
-                />
-              ))}
-            </IdentityGrid>
+                {mainChampion && (
+                  <CardItem
+                    card={mainChampion}
+                    quantity={1}
+                    onRightClick={setSelectedCard}
+                    viewMode="grid"
+                  />
+                )}
+                {runesGrouped.map((card, index) => (
+                  <CardItem
+                    key={`${card.id}-${index}`}
+                    card={card}
+                    quantity={card.quantity}
+                    onRightClick={setSelectedCard}
+                    viewMode="grid"
+                  />
+                ))}
+              </IdentityGrid>
+            </IdentityInner>
           </IdentityContainer>
         )}
 

@@ -2,8 +2,6 @@
 @import "../../styles/mixins";
 
 .decks-gallery-page {
-  padding-bottom: 60px;
-
   .decks-section {
     width: 100%;
     display: flex;
@@ -49,6 +47,36 @@
       color: #94a3b8;
       font-weight: 500;
       font-size: 1.1rem;
+    }
+
+    /* Tablet: fila (row), con wrap si hace falta */
+    @media (max-width: 768px) {
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+      padding: 12px;
+      background: transparent;
+      border: none;
+      border-radius: 0;
+      .pagination-button {
+        width: auto;
+        min-width: 100px;
+        padding: 10px 14px;
+        font-size: 1rem;
+      }
+      .pagination-info {
+        font-size: 1rem;
+        text-align: center;
+        flex: 0 0 auto;
+        margin: 0 8px;
+      }
+    }
+
+    /* Mobile: columna (column) y botones al 100% */
+    @media (max-width: 480px) {
+      flex-direction: row;
+      width: 100%;
     }
   }
 }

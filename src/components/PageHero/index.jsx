@@ -14,6 +14,15 @@ const HeroWrapper = styled.div`
   background-size: cover;
   background-position: top;
 
+  @media (max-width: ${(props) => props.theme.breakpoints.tablet}) {
+    max-width: 90%;
+    margin: 0 auto 40px;
+  }
+  @media (max-width: ${(props) => props.theme.breakpoints.mobile}) {
+    max-width: 95%;
+    margin: 0 auto 24px;
+  }
+
   &::before {
     content: "";
     position: absolute;
@@ -38,6 +47,13 @@ const HeroContent = styled.div`
   z-index: 2;
   padding: 3rem 2rem;
   text-align: center;
+
+  @media (max-width: ${(props) => props.theme.breakpoints.tablet}) {
+    padding: 2rem 1.5rem;
+  }
+  @media (max-width: ${(props) => props.theme.breakpoints.mobile}) {
+    padding: 1.5rem 1rem;
+  }
 `;
 
 const Title = styled.h1`
@@ -52,12 +68,22 @@ const Title = styled.h1`
   @media (max-width: ${(props) => props.theme.breakpoints.tablet}) {
     font-size: 2.5rem;
   }
+  @media (max-width: ${(props) => props.theme.breakpoints.mobile}) {
+    font-size: 2rem;
+  }
 `;
 
 const Subtitle = styled.p`
   font-size: 1.2rem;
   color: #fff;
   margin: 0;
+
+  @media (max-width: ${(props) => props.theme.breakpoints.tablet}) {
+    font-size: 1rem;
+  }
+  @media (max-width: ${(props) => props.theme.breakpoints.mobile}) {
+    font-size: 0.95rem;
+  }
 `;
 
 function PageHero({ title, subtitle, backgroundImage, onClick }) {
