@@ -5,7 +5,7 @@ const PageContainer = styled.div`
   width: 100%;
   max-width: 1440px;
   margin: 0 auto;
-  padding: 40px 20px;
+  padding: 20px;
   box-sizing: border-box;
   min-height: calc(100vh - 70px);
 

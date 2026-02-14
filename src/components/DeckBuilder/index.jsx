@@ -432,6 +432,19 @@ const DeckGridVisual = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
   gap: 15px;
+
+  @media (max-width: ${(props) => props.theme.breakpoints.desktop}) {
+    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+    gap: 14px;
+  }
+  @media (max-width: ${(props) => props.theme.breakpoints.tablet}) {
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 12px;
+  }
+  @media (max-width: ${(props) => props.theme.breakpoints.mobile}) {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
 `;
 
 const BuilderSection = ({

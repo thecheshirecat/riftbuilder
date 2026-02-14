@@ -50,6 +50,19 @@ const Grid = styled.div`
   gap: 24px;
   width: 100%;
   margin: 0 auto;
+
+  @media (max-width: ${(props) => props.theme.breakpoints.desktop}) {
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 20px;
+  }
+  @media (max-width: ${(props) => props.theme.breakpoints.tablet}) {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
+  }
+  @media (max-width: ${(props) => props.theme.breakpoints.mobile}) {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
 `;
 
 const DeckCard = styled.div`

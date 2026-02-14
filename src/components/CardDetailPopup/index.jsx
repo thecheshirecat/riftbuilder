@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import styled, { keyframes, css } from "styled-components";
 import tapIcon from "../../assets/icons/tap.webp";
 import mightIcon from "../../assets/icons/might.webp";
@@ -32,6 +32,8 @@ const Overlay = styled.div`
   align-items: center;
   z-index: 10000;
   backdrop-filter: blur(8px);
+  overscroll-behavior: contain;
+  touch-action: none;
 `;
 
 const Popup = styled.div`
@@ -130,15 +132,15 @@ const StatBadge = styled.span`
       color: #eee;
     `}
 
-  ${(props) =>
-    props.type === "energy" &&
+  ${({ type, theme }) =>
+    type === "energy" &&
     css`
       background: rgba(77, 171, 247, 0.15);
-      color: ${props.theme.colors.primary};
+      color: ${theme.colors.primary};
     `}
 
-  ${(props) =>
-    props.type === "set" &&
+  ${({ type }) =>
+    type === "set" &&
     css`
       background: rgba(255, 192, 72, 0.15);
       color: #ffc048;
@@ -283,12 +285,12 @@ const AddButton = styled.button`
     transform: translateY(-2px);
   }
 
-  ${(props) =>
-    props.secondary &&
+  ${({ secondary, theme }) =>
+    secondary &&
     css`
       background: rgba(255, 255, 255, 0.05);
-      border: 1px solid ${props.theme.colors.borderColor};
-      color: ${props.theme.colors.textDim};
+      border: 1px solid ${theme.colors.borderColor};
+      color: ${theme.colors.textDim};
 
       &:hover {
         background: rgba(255, 255, 255, 0.1);
@@ -308,9 +310,24 @@ const domainIcons = {
 };
 
 function CardDetailPopup({ card, onClose, onAdd }) {
-  if (!card) return null;
-
   const showAddButtons = !!onAdd;
+
+  useEffect(() => {
+    if (!card) return;
+    const prevBodyOverflow = document.body.style.overflow;
+    const prevHtmlOverflow = document.documentElement.style.overflow;
+    const prevTouchAction = document.body.style.touchAction;
+    document.body.style.overflow = "hidden";
+    document.documentElement.style.overflow = "hidden";
+    document.body.style.touchAction = "none";
+    return () => {
+      document.body.style.overflow = prevBodyOverflow || "";
+      document.documentElement.style.overflow = prevHtmlOverflow || "";
+      document.body.style.touchAction = prevTouchAction || "";
+    };
+  }, [card]);
+
+  if (!card) return null;
 
   const renderCardText = () => {
     // Prioridad absoluta al Rich Text de la API (contiene HTML con iconos y saltos de línea)

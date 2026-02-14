@@ -21,7 +21,7 @@ const ScrollWrapper = styled.div`
   }
 
   &::-webkit-scrollbar-track {
-    background: ${props => props.theme.colors.bgDark};
+    background: ${(props) => props.theme.colors.bgDark};
   }
 
   &::-webkit-scrollbar-thumb {
@@ -49,6 +49,39 @@ const ListGrid = styled.div`
     gap: 10px;
     padding: 15px;
   }
+
+  @media (max-width: ${(props) => props.theme.breakpoints.desktop}) {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+    padding: 20px;
+    &.grid-mode {
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 18px;
+      padding: 18px;
+    }
+  }
+
+  @media (max-width: ${(props) => props.theme.breakpoints.tablet}) {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 16px;
+    padding: 16px;
+    &.grid-mode {
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 16px;
+      padding: 16px;
+    }
+  }
+
+  @media (max-width: ${(props) => props.theme.breakpoints.mobile}) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    padding: 12px;
+    &.grid-mode {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      padding: 12px;
+    }
+  }
 `;
 
 const ItemWrapper = styled.div`
@@ -65,23 +98,23 @@ const Pagination = styled.div`
   align-items: center;
   gap: 16px;
   padding: 24px;
-  background: ${props => props.theme.colors.bgDark};
-  border-top: 1px solid ${props => props.theme.colors.borderColor};
+  background: ${(props) => props.theme.colors.bgDark};
+  border-top: 1px solid ${(props) => props.theme.colors.borderColor};
 `;
 
 const PageBtn = styled.button`
-  background: ${props => props.theme.colors.bgCard};
-  border: 1px solid ${props => props.theme.colors.borderColor};
-  color: ${props => props.theme.colors.textMain};
+  background: ${(props) => props.theme.colors.bgCard};
+  border: 1px solid ${(props) => props.theme.colors.borderColor};
+  color: ${(props) => props.theme.colors.textMain};
   padding: 8px 16px;
   border-radius: 6px;
   cursor: pointer;
-  transition: ${props => props.theme.effects.transition};
+  transition: ${(props) => props.theme.effects.transition};
   font-weight: 600;
 
   &:hover:not(:disabled) {
     background: #333;
-    border-color: ${props => props.theme.colors.primary};
+    border-color: ${(props) => props.theme.colors.primary};
   }
 
   &:disabled {
@@ -91,7 +124,7 @@ const PageBtn = styled.button`
 `;
 
 const PageInfo = styled.span`
-  color: ${props => props.theme.colors.textDim};
+  color: ${(props) => props.theme.colors.textDim};
   font-size: 0.9rem;
   font-weight: 500;
 `;
@@ -99,7 +132,7 @@ const PageInfo = styled.span`
 const Message = styled.div`
   padding: 40px;
   text-align: center;
-  color: ${props => props.theme.colors.textDim};
+  color: ${(props) => props.theme.colors.textDim};
   font-size: 1.1rem;
 `;
 
@@ -114,9 +147,7 @@ function CardList({
   viewMode = "grid",
 }) {
   if (!cards || cards.length === 0) {
-    return (
-      <Message>No cards found matching your criteria.</Message>
-    );
+    return <Message>No cards found matching your criteria.</Message>;
   }
 
   return (

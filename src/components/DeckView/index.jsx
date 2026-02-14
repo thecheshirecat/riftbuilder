@@ -26,16 +26,55 @@ const Nav = styled.nav`
   align-items: center;
   justify-content: space-between;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+
+  @media (max-width: ${(props) => props.theme.breakpoints.tablet}) {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+  @media (max-width: ${(props) => props.theme.breakpoints.mobile}) {
+    padding: 6px 10px;
+    top: 70px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
 `;
 
 const NavCenter = styled.div`
   display: flex;
   gap: 12px;
+
+  @media (max-width: ${(props) => props.theme.breakpoints.tablet}) {
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+  }
+  @media (max-width: ${(props) => props.theme.breakpoints.mobile}) {
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+  }
 `;
 
 const NavRight = styled.div`
   display: flex;
   gap: 12px;
+
+  @media (max-width: ${(props) => props.theme.breakpoints.tablet}) {
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+  }
+  @media (max-width: ${(props) => props.theme.breakpoints.mobile}) {
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+  }
 `;
 
 const PillContainer = styled.div`
@@ -51,6 +90,33 @@ const PillContainer = styled.div`
       min-width: 35px;
       font-size: 0.85rem;
       justify-content: center;
+    }
+  }
+
+  @media (max-width: ${(props) => props.theme.breakpoints.tablet}) {
+    padding: 2px;
+    flex-wrap: wrap;
+    row-gap: 8px;
+    width: auto;
+    max-width: 420px;
+    align-self: center;
+    justify-content: center;
+  }
+  @media (max-width: ${(props) => props.theme.breakpoints.mobile}) {
+    padding: 2px;
+    flex-wrap: wrap;
+    row-gap: 6px;
+    width: auto;
+    max-width: 360px;
+    align-self: center;
+    justify-content: center;
+
+    &.sort-selector {
+      button {
+        min-width: 28px;
+        font-size: 0.8rem;
+        padding: 4px 8px;
+      }
     }
   }
 `;
@@ -81,6 +147,12 @@ const PillButton = styled.button`
     color: ${(props) => props.theme.colors.primary} !important;
     font-weight: 800 !important;
   }
+
+  @media (max-width: ${(props) => props.theme.breakpoints.mobile}) {
+    padding: 4px 10px;
+    font-size: 0.8rem;
+    gap: 4px;
+  }
 `;
 
 const PillIcon = styled.span`
@@ -93,6 +165,10 @@ const SortDivider = styled.div`
   background: rgba(255, 255, 255, 0.15);
   margin: 0 3px;
   align-self: center;
+
+  @media (max-width: ${(props) => props.theme.breakpoints.mobile}) {
+    display: none;
+  }
 `;
 
 const ActionButton = styled.button`
@@ -173,8 +249,11 @@ const DeckContainer = styled.div`
   gap: 15px;
   width: 100%;
 
-  &.view-mode-active {
-    padding-bottom: 50px;
+  @media (max-width: ${(props) => props.theme.breakpoints.mobile}) {
+    gap: 10px;
+    &.view-mode-active {
+      padding-bottom: 20px;
+    }
   }
 `;
 
@@ -190,6 +269,13 @@ const HeroSection = styled.div`
   h1 {
     margin-bottom: 15px;
   }
+
+  @media (max-width: ${(props) => props.theme.breakpoints.mobile}) {
+    padding: 20px 12px;
+    h1 {
+      margin-bottom: 10px;
+    }
+  }
 `;
 
 const Description = styled.p`
@@ -199,6 +285,12 @@ const Description = styled.p`
   font-size: 1.1rem;
   line-height: 1.6;
   font-style: italic;
+
+  @media (max-width: ${(props) => props.theme.breakpoints.mobile}) {
+    max-width: 100%;
+    font-size: 0.95rem;
+    line-height: 1.4;
+  }
 `;
 
 const IdentityContainer = styled.div`
@@ -209,6 +301,10 @@ const IdentityContainer = styled.div`
     rgba(0, 0, 0, 0.5) 100%
   );
   border-top: 1px solid rgba(255, 255, 255, 0.05);
+
+  @media (max-width: ${(props) => props.theme.breakpoints.mobile}) {
+    padding: 16px 12px;
+  }
 `;
 
 const IdentityGrid = styled.div`
@@ -230,6 +326,25 @@ const IdentityGrid = styled.div`
     height: auto !important;
     object-fit: contain !important;
   }
+
+  @media (max-width: ${(props) => props.theme.breakpoints.tablet}) {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    .card-item-container,
+    & > div {
+      width: auto !important;
+    }
+  }
+  @media (max-width: ${(props) => props.theme.breakpoints.mobile}) {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    .card-item-container,
+    & > div {
+      width: auto !important;
+    }
+  }
 `;
 
 const DeckLayout = styled.div`
@@ -237,9 +352,13 @@ const DeckLayout = styled.div`
   flex-direction: column;
   gap: 15px;
   width: 100%;
-  padding: 15px;
   padding-top: 0;
   box-sizing: border-box;
+
+  @media (max-width: ${(props) => props.theme.breakpoints.mobile}) {
+    gap: 10px;
+    padding: 10px;
+  }
 `;
 
 const StyledSection = styled.div`
@@ -258,12 +377,42 @@ const StyledSection = styled.div`
     font-weight: 800;
     letter-spacing: 2px;
   }
+
+  @media (max-width: ${(props) => props.theme.breakpoints.tablet}) {
+    padding: 12px;
+    h3 {
+      font-size: 1.2rem;
+      letter-spacing: 1px;
+    }
+  }
+
+  @media (max-width: ${(props) => props.theme.breakpoints.mobile}) {
+    padding: 10px;
+    h3 {
+      margin: 0 0 10px 0;
+      font-size: 1.1rem;
+      letter-spacing: 1px;
+    }
+  }
 `;
 
 const GridVisual = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 20px;
+
+  @media (max-width: ${(props) => props.theme.breakpoints.desktop}) {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 18px;
+  }
+  @media (max-width: ${(props) => props.theme.breakpoints.tablet}) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+  @media (max-width: ${(props) => props.theme.breakpoints.mobile}) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
 `;
 
 const ListMini = styled.div`
@@ -274,6 +423,8 @@ const ListMini = styled.div`
 
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
+    gap: 8px 12px;
+    margin-top: 10px;
   }
 `;
 

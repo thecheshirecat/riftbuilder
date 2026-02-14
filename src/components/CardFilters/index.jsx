@@ -42,6 +42,19 @@ const SearchControls = styled.div`
   position: sticky;
   z-index: 11;
   top: 70px;
+
+  @media (max-width: ${(props) => props.theme.breakpoints.tablet}) {
+    padding: 14px;
+    gap: 12px;
+    margin-bottom: 16px;
+    top: 60px;
+  }
+  @media (max-width: ${(props) => props.theme.breakpoints.mobile}) {
+    padding: 10px;
+    gap: 10px;
+    margin-bottom: 12px;
+    top: 56px;
+  }
 `;
 
 const SearchMainRow = styled.div`
