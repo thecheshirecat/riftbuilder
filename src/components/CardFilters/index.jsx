@@ -182,8 +182,6 @@ const AdvancedFiltersPanel = styled.div`
   display: grid;
   grid-template-rows: ${(props) => (props.expanded ? "1fr" : "0fr")};
   transition: grid-template-rows 300ms ease;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  padding-top: ${(props) => (props.expanded ? "20px" : "0")};
   & > * {
     overflow: hidden;
   }
@@ -234,6 +232,7 @@ function CardFilters({
   setFilters,
   availableDomains,
   disableTypeFilter,
+  isMobile,
   mobileColumnView,
   setMobileColumnView,
 }) {
@@ -265,7 +264,7 @@ function CardFilters({
 
   return (
     <SearchControls>
-      {mobileColumnView !== "right" && (
+      {!(isMobile && mobileColumnView === "right") && (
         <SearchMainRow>
           <SearchBar query={filters.q} setFilters={setFilters} />
 
@@ -324,9 +323,9 @@ function CardFilters({
           type="button"
           active={mobileColumnView === "left"}
           onClick={() => setMobileColumnView("left")}
-          title="Results"
+          title="Cards"
         >
-          Results
+          C
         </ActionButton>
         <ActionButton
           type="button"
@@ -338,7 +337,7 @@ function CardFilters({
         </ActionButton>
       </MobileToggleRow>
 
-      {mobileColumnView !== "right" && (
+      {!(isMobile && mobileColumnView === "right") && (
         <>
           <DomainFilters
             filters={filters}
@@ -374,5 +373,4 @@ function CardFilters({
     </SearchControls>
   );
 }
-
 export default CardFilters;

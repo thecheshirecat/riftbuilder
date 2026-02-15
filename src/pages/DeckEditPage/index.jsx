@@ -85,11 +85,21 @@ function DeckEditPage() {
 
   // El editor siempre utiliza la vista de cuadrícula para las cartas disponibles
   const viewMode = "grid";
-  const isMobile =
-    typeof window !== "undefined"
-      ? window.matchMedia("(max-width: 480px)").matches
-      : false;
+  const [isMobile, setIsMobile] = useState(() => {
+    if (typeof window !== "undefined") {
+      return window.matchMedia("(max-width: 480px)").matches;
+    }
+    return false;
+  });
   const [mobileColumnView, setMobileColumnView] = useState("left");
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const mq = window.matchMedia("(max-width: 480px)");
+    const handler = (e) => setIsMobile(e.matches);
+    mq.addEventListener("change", handler);
+    setIsMobile(mq.matches);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
 
   // -- Configuración de Filtros --
   const [filters, setFilters] = useState({
@@ -556,6 +566,7 @@ function DeckEditPage() {
               availableDomains={availableDomains}
               viewMode={viewMode}
               setViewMode={() => {}}
+              isMobile={isMobile}
               mobileColumnView={mobileColumnView}
               setMobileColumnView={setMobileColumnView}
             />
