@@ -54,7 +54,9 @@ const SearchControls = styled.div`
   @media (max-width: ${(props) => props.theme.breakpoints.mobile}) {
     padding: 10px;
     gap: 10px;
-    margin-bottom: 12px;
+    margin-bottom: 0;
+    border-radius: 12px;
+    border: 0;
   }
 `;
 
@@ -69,6 +71,15 @@ const FilterActions = styled.div`
   display: flex;
   gap: 10px;
   align-items: center;
+`;
+const MobileToggleRow = styled.div`
+  display: none;
+  @media (max-width: ${(props) => props.theme.breakpoints.mobile}) {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    justify-content: center;
+  }
 `;
 
 const CustomSelectContainer = styled.div`
@@ -223,6 +234,8 @@ function CardFilters({
   setFilters,
   availableDomains,
   disableTypeFilter,
+  mobileColumnView,
+  setMobileColumnView,
 }) {
   const [showAdvanced, setShowAdvanced] = React.useState(false);
   const [isSortOpen, setIsSortOpen] = React.useState(false);
@@ -252,85 +265,112 @@ function CardFilters({
 
   return (
     <SearchControls>
-      <SearchMainRow>
-        <SearchBar query={filters.q} setFilters={setFilters} />
+      {mobileColumnView !== "right" && (
+        <SearchMainRow>
+          <SearchBar query={filters.q} setFilters={setFilters} />
 
-        <FilterActions>
-          <CustomSelectContainer ref={sortRef}>
-            <CustomSelectTrigger
-              isOpen={isSortOpen}
-              onClick={() => setIsSortOpen(!isSortOpen)}
+          <FilterActions>
+            <CustomSelectContainer ref={sortRef}>
+              <CustomSelectTrigger
+                isOpen={isSortOpen}
+                onClick={() => setIsSortOpen(!isSortOpen)}
+              >
+                <span>{currentSortLabel}</span>
+                <SelectArrow isOpen={isSortOpen}>▼</SelectArrow>
+              </CustomSelectTrigger>
+              {isSortOpen && (
+                <CustomOptions>
+                  {sortOptions.map((opt) => (
+                    <CustomOption
+                      key={opt.value}
+                      selected={filters.sort === opt.value}
+                      onClick={() => {
+                        setFilters((p) => ({ ...p, sort: opt.value, page: 1 }));
+                        setIsSortOpen(false);
+                      }}
+                    >
+                      {opt.label}
+                    </CustomOption>
+                  ))}
+                </CustomOptions>
+              )}
+            </CustomSelectContainer>
+
+            <ActionButton
+              onClick={() =>
+                setFilters((p) => ({
+                  ...p,
+                  order: p.order === "ASC" ? "DESC" : "ASC",
+                  page: 1,
+                }))
+              }
+              title={filters.order === "ASC" ? "Ascending" : "Descending"}
             >
-              <span>{currentSortLabel}</span>
-              <SelectArrow isOpen={isSortOpen}>▼</SelectArrow>
-            </CustomSelectTrigger>
-            {isSortOpen && (
-              <CustomOptions>
-                {sortOptions.map((opt) => (
-                  <CustomOption
-                    key={opt.value}
-                    selected={filters.sort === opt.value}
-                    onClick={() => {
-                      setFilters((p) => ({ ...p, sort: opt.value, page: 1 }));
-                      setIsSortOpen(false);
-                    }}
-                  >
-                    {opt.label}
-                  </CustomOption>
-                ))}
-              </CustomOptions>
-            )}
-          </CustomSelectContainer>
+              {filters.order === "ASC" ? "↑" : "↓"}
+            </ActionButton>
 
-          <ActionButton
-            onClick={() =>
-              setFilters((p) => ({
-                ...p,
-                order: p.order === "ASC" ? "DESC" : "ASC",
-                page: 1,
-              }))
-            }
-            title={filters.order === "ASC" ? "Ascending" : "Descending"}
-          >
-            {filters.order === "ASC" ? "↑" : "↓"}
-          </ActionButton>
+            <ActionButton
+              active={showAdvanced}
+              onClick={() => setShowAdvanced(!showAdvanced)}
+            >
+              {showAdvanced ? "Simple" : "Advanced"}
+            </ActionButton>
+          </FilterActions>
+        </SearchMainRow>
+      )}
 
-          <ActionButton
-            active={showAdvanced}
-            onClick={() => setShowAdvanced(!showAdvanced)}
-          >
-            {showAdvanced ? "Simple" : "Advanced"}
-          </ActionButton>
-        </FilterActions>
-      </SearchMainRow>
+      <MobileToggleRow>
+        <ActionButton
+          type="button"
+          active={mobileColumnView === "left"}
+          onClick={() => setMobileColumnView("left")}
+          title="Results"
+        >
+          Results
+        </ActionButton>
+        <ActionButton
+          type="button"
+          active={mobileColumnView === "right"}
+          onClick={() => setMobileColumnView("right")}
+          title="Deck"
+        >
+          Deck
+        </ActionButton>
+      </MobileToggleRow>
 
-      <DomainFilters
-        filters={filters}
-        setFilters={setFilters}
-        availableDomains={availableDomains}
-        domainIcons={domainIcons}
-      />
+      {mobileColumnView !== "right" && (
+        <>
+          <DomainFilters
+            filters={filters}
+            setFilters={setFilters}
+            availableDomains={availableDomains}
+            domainIcons={domainIcons}
+          />
+          <AdvancedFiltersPanel expanded={showAdvanced}>
+            <AdvancedGrid>
+              <SlidersColumn>
+                <StatSliders filters={filters} setFilters={setFilters} />
+              </SlidersColumn>
 
-      <AdvancedFiltersPanel expanded={showAdvanced}>
-        <AdvancedGrid>
-          <SlidersColumn>
-            <StatSliders filters={filters} setFilters={setFilters} />
-          </SlidersColumn>
-
-          <ChipsColumn>
-            {!disableTypeFilter && (
-              <>
-                <CardTypeFilters filters={filters} setFilters={setFilters} />
-                <RarityFilters
-                  filters={filters}
-                  setFilters={setFilters}
-                  rarityIcons={rarityIcons}
-                />
-              </>
-            )}
-          </ChipsColumn>
-        </AdvancedGrid>
-      </AdvancedFiltersPanel>
+              <ChipsColumn>
+                {!disableTypeFilter && (
+                  <>
+                    <CardTypeFilters
+                      filters={filters}
+                      setFilters={setFilters}
+                    />
+                    <RarityFilters
+                      filters={filters}
+                      setFilters={setFilters}
+                      rarityIcons={rarityIcons}
+                    />
+                  </>
+                )}
+              </ChipsColumn>
+            </AdvancedGrid>
+          </AdvancedFiltersPanel>
+        </>
+      )}
     </SearchControls>
   );
 }

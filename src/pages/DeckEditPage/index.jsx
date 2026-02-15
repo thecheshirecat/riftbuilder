@@ -85,6 +85,11 @@ function DeckEditPage() {
 
   // El editor siempre utiliza la vista de cuadrícula para las cartas disponibles
   const viewMode = "grid";
+  const isMobile =
+    typeof window !== "undefined"
+      ? window.matchMedia("(max-width: 480px)").matches
+      : false;
+  const [mobileColumnView, setMobileColumnView] = useState("left");
 
   // -- Configuración de Filtros --
   const [filters, setFilters] = useState({
@@ -539,51 +544,62 @@ function DeckEditPage() {
     <div className="deck-edit-page">
       <main className="deck-edit-main">
         <div className="content-grid">
-          <section className="card-list-section">
+          <section
+            className={
+              "card-list-section " +
+              (isMobile && mobileColumnView === "right" ? "deck-sticky" : "")
+            }
+          >
             <CardFilters
               filters={filters}
               setFilters={setFilters}
               availableDomains={availableDomains}
               viewMode={viewMode}
               setViewMode={() => {}}
+              mobileColumnView={mobileColumnView}
+              setMobileColumnView={setMobileColumnView}
             />
-            <CardList
-              cards={cards}
-              pagination={pagination}
-              setPage={handlePageChange}
-              setSelectedCard={setSelectedCard}
-              addCardToDeck={handleAddCardToDeck}
-              removeCardFromDeck={(cardId) =>
-                removeCardFromDeck(selectedDeck.id, cardId)
-              }
-              cardCounts={cardCounts}
-              viewMode={viewMode}
-            />
+            {!(isMobile && mobileColumnView === "right") && (
+              <CardList
+                cards={cards}
+                pagination={pagination}
+                setPage={handlePageChange}
+                setSelectedCard={setSelectedCard}
+                addCardToDeck={handleAddCardToDeck}
+                removeCardFromDeck={(cardId) =>
+                  removeCardFromDeck(selectedDeck.id, cardId)
+                }
+                cardCounts={cardCounts}
+                viewMode={viewMode}
+              />
+            )}
           </section>
 
-          <section className="deck-section">
-            <Deck
-              selectedDeck={selectedDeck}
-              deck={deck}
-              removeCardFromDeck={(id, isSb) =>
-                removeCardFromDeck(selectedDeck.id, id, isSb)
-              }
-              addCardToDeck={handleAddCardToDeck}
-              mainChampionId={selectedDeck.main_champion_id}
-              setMainChampionId={setMainChampionId}
-              updateDeckMetadata={updateDeckMetadata}
-              onDeleteDeck={handleDeleteDeck}
-              isEditingMode={true}
-              setIsEditingMode={() => navigate(`/view/${deckId}`)}
-              viewMode={viewMode}
-              setSelectedCard={setSelectedCard}
-              onSectionClick={handleSectionClick}
-              onImportDeck={handleImportDeck}
-              activeSection={filters.activeSection}
-              sort={filters.sort}
-              order={filters.order}
-            />
-          </section>
+          {!(isMobile && mobileColumnView === "left") && (
+            <section className="deck-section">
+              <Deck
+                selectedDeck={selectedDeck}
+                deck={deck}
+                removeCardFromDeck={(id, isSb) =>
+                  removeCardFromDeck(selectedDeck.id, id, isSb)
+                }
+                addCardToDeck={handleAddCardToDeck}
+                mainChampionId={selectedDeck.main_champion_id}
+                setMainChampionId={setMainChampionId}
+                updateDeckMetadata={updateDeckMetadata}
+                onDeleteDeck={handleDeleteDeck}
+                isEditingMode={true}
+                setIsEditingMode={() => navigate(`/view/${deckId}`)}
+                viewMode={viewMode}
+                setSelectedCard={setSelectedCard}
+                onSectionClick={handleSectionClick}
+                onImportDeck={handleImportDeck}
+                activeSection={filters.activeSection}
+                sort={filters.sort}
+                order={filters.order}
+              />
+            </section>
+          )}
         </div>
       </main>
 

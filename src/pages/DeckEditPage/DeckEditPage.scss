@@ -46,6 +46,12 @@
     position: relative;
     overflow: visible;
   }
+  .card-list-section.deck-sticky {
+    position: sticky;
+    position: -webkit-sticky;
+    top: 70px;
+    z-index: 1000;
+  }
 
   .deck-section {
     background: #1e1e1e;
